@@ -144,8 +144,8 @@ person welcoming themselves.
 
 ## Seed (`engine/seed/rewards.json`, program `hanzo-rewards`)
 
-Created once on first mount (`Seed`), never overwritten: after that admin owns it.
-Active rules are only the values in the owner-approved 2026-10-26 spec plus the owner's
+Created once on first mount (`Seed`), never overwritten: after that admin owns it, except
+for the top-up below. Active rules are only the values in the owner-approved 2026-10-26 spec plus the owner's
 later values; everything else is inactive at 0 points. All are manual.
 
 - Spec: token milestones 100K +10, 1M +20, 5M +30, 10M +40, 100M +75, 1B +100, 10B
@@ -191,6 +191,36 @@ later values; everything else is inactive at 0 points. All are manual.
   The seed test lists them by id (`counted` in `engine/seed_test.go`) and the engine test
   `engine/seed_events_test.go` sends each one an event.
 
+### Seed top-up
+
+The seed has its own `seedVersion` (1 today); a program has `SeedVersion` (json
+`seedVersion`, set by the engine only: admin PUT and POST bodies ignore it, it is not part of
+the header). A program the first seed made (v0.1.4 and before) has 0. `Seed` runs on every
+mount; when the stored program's `SeedVersion` is below the embedded one it tops the program
+up, once, and returns `Seeded{Created, Rules, Badges, Levels, Upline}` (Mount logs the counts):
+
+- every seed rule whose id is absent is appended at version 1, exactly as seeded, and every
+  seed badge whose id is absent is appended. A rule or badge that exists is never altered,
+  deactivated or removed, whatever its state. A rule staff deleted comes back when its id is
+  in the seed: an absent id cannot be told from one never added.
+- `levels` is replaced with the seed's only if the stored table is still exactly the first
+  seed's five levels (`firstLevels` in `engine/seed.go`: Hacker 0, Builder 100, Shipper 500,
+  Core 2500, Legend 10000, no band). Any other table is staff's and stays.
+- `upline` is set from the seed only if the stored one is empty; a stored one stays.
+- `foundingCutoff`, the budget, the name and the templates are not touched.
+
+Then `Version` rises, `SeedVersion` becomes the seed's, and one `program.seeded` trail record
+(actor `seed`) names the counts and whether levels and upline were set. A program already at
+the seed's version is untouched, so a second mount does nothing. The program is read, changed
+and written in one pass with ids checked against the document being written: two replicas
+mounting together each write a whole document with every id once (a staff edit made between
+that read and write is lost, as with any last-save-wins admin save); a top-up that fails
+before its write leaves `SeedVersion` behind and the next mount repeats it. A fresh store
+is created at the seed's version, with the `program.created` record and no `program.seeded`.
+To ship more seed content later, add it and raise the embedded `seedVersion`.
+The test `engine/testdata/seed-v0.1.4.json` is the first seed, from `git show
+v0.1.4:engine/seed/rewards.json`; v0.1.4 and v0.1.5 seeded the same document.
+
 ## Levels
 
 `Program.Levels` is the table of standings: `{level, name, band, minLifetimePoints}`. The
@@ -205,7 +235,8 @@ Focus, 30-39 Flare, 40-49 Comet, 50-59 Pulsar, 60-69 Nebula, 70-79 Quasar, 80-89
 Magnetar, 90-99 Singularity. A level's `name` is `<Band> <n>` (`Photon 0`, `Flare 37`),
 its `band` is `<Band>`. 999 points is level 9 `Photon 9`; 1,000 is level 10 `Wave 10`.
 Admin edits the table with the rest of the program; nothing about bands is special there.
-The seed is created once, so a program already stored keeps its table until admin changes it.
+A program already stored keeps its table, unless it is still the first seed's five levels,
+which the top-up replaces (see Seed top-up); a table staff changed stays.
 
 `GET /v1/reward/me` returns per program `level` (`{level, name, band, minLifetimePoints}`),
 `next` (the same shape) and, beside them, `band` (the level's). The public profile returns

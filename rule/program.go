@@ -83,6 +83,10 @@ type Program struct {
 	// Version starts at 1 and is raised each time the program or one of its rules
 	// changes.
 	Version int `json:"version"`
+	// SeedVersion is the version of the embedded seed this program was last brought
+	// up to: 0 for one created before seeds had versions. Only the engine sets it;
+	// admin input never carries it.
+	SeedVersion int `json:"seedVersion"`
 
 	Budget Budget `json:"budget"`
 	// Upline is the percentage of a claim's points paid, as points that count
@@ -110,8 +114,10 @@ type View struct {
 	Name    string `json:"name"`
 	Active  bool   `json:"active"`
 	Version int    `json:"version"`
-	Budget  Budget `json:"budget"`
-	Upline  []int  `json:"upline"`
+	// SeedVersion is as on Program.
+	SeedVersion int    `json:"seedVersion"`
+	Budget      Budget `json:"budget"`
+	Upline      []int  `json:"upline"`
 	// FoundingCutoff is as on Program.
 	FoundingCutoff string     `json:"foundingCutoff"`
 	Levels         []Level    `json:"levels"`
@@ -124,7 +130,7 @@ type View struct {
 
 // View is p as callers see it.
 func (p *Program) View() View {
-	return View{ID: p.Slug(), Name: p.Name, Active: p.Active, Version: p.Version, Budget: p.Budget, Upline: nonNil(p.Upline),
+	return View{ID: p.Slug(), Name: p.Name, Active: p.Active, Version: p.Version, SeedVersion: p.SeedVersion, Budget: p.Budget, Upline: nonNil(p.Upline),
 		FoundingCutoff: p.FoundingCutoff, Levels: nonNil(p.Levels), Badges: nonNil(p.Badges), Templates: nonNil(p.Templates), Rules: nonNil(p.Rules),
 		CreatedAt: p.CreatedAt, UpdatedAt: p.UpdatedAt}
 }

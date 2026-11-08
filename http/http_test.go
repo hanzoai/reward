@@ -467,6 +467,30 @@ func TestTheFoundingCutoffRoundTripsThroughTheAdminProgram(t *testing.T) {
 	}
 }
 
+func TestAdminReadsTheSeedVersionAndCannotSetIt(t *testing.T) {
+	r := newRig(t)
+	r.seeded()
+	var prog rule.View
+	r.json(staff, "GET", admin+"/programs/hanzo-rewards", nil, 200, &prog)
+	if prog.SeedVersion != 1 || prog.Version != 1 {
+		t.Fatalf("seedVersion %d, version %d", prog.SeedVersion, prog.Version)
+	}
+	// the whole view sent back, with the engine's own fields changed, saves the header and nothing else.
+	body := map[string]any{"name": "Renamed", "active": true, "budget": prog.Budget, "upline": prog.Upline, "levels": prog.Levels,
+		"badges": prog.Badges, "templates": prog.Templates, "seedVersion": 0, "version": 99}
+	var saved rule.View
+	r.json(staff, "PUT", admin+"/programs/hanzo-rewards", body, 200, &saved)
+	if saved.Name != "Renamed" || saved.SeedVersion != 1 || saved.Version != 2 {
+		t.Errorf("saved = name %q, seedVersion %d, version %d", saved.Name, saved.SeedVersion, saved.Version)
+	}
+	// a program admin creates is not at any seed's version.
+	var made rule.View
+	r.json(staff, "POST", admin+"/programs", map[string]any{"id": "mini", "name": "Mini", "seedVersion": 1}, 201, &made)
+	if made.SeedVersion != 0 {
+		t.Errorf("created seedVersion = %d", made.SeedVersion)
+	}
+}
+
 func TestBackfillOverHTTPIsAdminOnlyAndIdempotent(t *testing.T) {
 	r := newRig(t)
 	r.seeded()

@@ -15,9 +15,9 @@ import (
 func TestTheSeedCreatesTheProgramOnceAndAdminOwnsItAfter(t *testing.T) {
 	ctx := context.Background()
 	e := &Engine{DB: openDB(t)}
-	created, err := e.Seed(ctx)
-	if err != nil || !created {
-		t.Fatalf("seed: %v %v", created, err)
+	seeded, err := e.Seed(ctx)
+	if err != nil || seeded != (Seeded{Created: true}) {
+		t.Fatalf("seed: %+v %v", seeded, err)
 	}
 	p, err := e.Program(ctx, "hanzo-rewards")
 	if err != nil || !p.Active || p.Version != 1 {
@@ -31,8 +31,8 @@ func TestTheSeedCreatesTheProgramOnceAndAdminOwnsItAfter(t *testing.T) {
 		t.Fatal(err)
 	}
 	again, err := e.Seed(ctx)
-	if err != nil || again {
-		t.Fatalf("second seed: %v %v", again, err)
+	if err != nil || again != (Seeded{}) {
+		t.Fatalf("second seed: %+v %v", again, err)
 	}
 	p, _ = e.Program(ctx, "hanzo-rewards")
 	if got := p.Find("tokens-100k").Then[0].Points; got != 12 {
