@@ -1,7 +1,10 @@
 package engine
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
+	"slices"
 	"testing"
 
 	"github.com/hanzoai/reward/catalog"
@@ -195,5 +198,113 @@ func TestExploreListsWhatIsLeftByPillarInOrder(t *testing.T) {
 	groups, _ = r.e.Explore(r.ctx, "alice")
 	if len(groups[2].Rules) != 2 {
 		t.Errorf("after a rejection: %+v", groups[2].Rules)
+	}
+}
+
+func TestTopIsTheRarestThenTheMostRecentlyEarned(t *testing.T) {
+	p := Public{Badges: []Face{
+		{ID: "a", Rarity: rule.Common, EarnedAt: "2026-01-09T00:00:00Z"},
+		{ID: "b", Rarity: rule.Epic, EarnedAt: "2026-01-02T00:00:00Z"},
+		{ID: "c", Rarity: rule.Epic, EarnedAt: "2026-01-03T00:00:00Z"},
+		{ID: "d", Rarity: rule.Legendary, EarnedAt: "2026-01-01T00:00:00Z"},
+		{ID: "e", Rarity: rule.Rare, EarnedAt: "2026-01-04T00:00:00Z"},
+		{ID: "f", Rarity: rule.Uncommon, EarnedAt: "2026-01-05T00:00:00Z"},
+		{ID: "g", Rarity: rule.Common, EarnedAt: "2026-01-09T00:00:00Z"},
+	}}
+	ids := func(n int) string {
+		var out string
+		for _, f := range p.Top(n) {
+			out += f.ID
+		}
+		return out
+	}
+	// legendary, epic (newest first), rare, uncommon, common (same moment: by id).
+	if got := ids(10); got != "dcbefag" {
+		t.Errorf("order = %s", got)
+	}
+	if ids(3) != "dcb" || ids(0) != "" || ids(1) != "d" {
+		t.Errorf("top 3 = %s, top 0 = %q", ids(3), ids(0))
+	}
+	if p.Badges[0].ID != "a" {
+		t.Error("Top reordered the profile's own badges")
+	}
+	if got := (Public{}).Top(3); len(got) != 0 {
+		t.Errorf("no badges = %v", got)
+	}
+}
+
+func TestTierIsTheNameOfTheHighestTokenMilestoneHeld(t *testing.T) {
+	held := func(ids ...string) Public {
+		p := Public{}
+		for i, id := range ids {
+			// earned in the order given, and named as a person would read it.
+			p.Badges = append(p.Badges, Face{ID: id, Name: "name of " + id, Rarity: rule.Common, EarnedAt: fmt.Sprintf("2026-01-%02dT00:00:00Z", i+1)})
+		}
+		return p
+	}
+	for name, c := range map[string]struct {
+		p    Public
+		want string
+	}{
+		"nothing held":        {held(), ""},
+		"no milestone":        {held("stargazer", "first-merge"), ""},
+		"one":                 {held("million-token-club"), "name of million-token-club"},
+		"the highest":         {held("first-100k", "five-million", "million-token-club"), "name of five-million"},
+		"not the latest":      {held("titan", "century", "first-100k"), "name of titan"},
+		"among other badges":  {held("stargazer", "century", "polyglot", "ten-million"), "name of century"},
+		"the top of the list": {held("trillion-club", "first-100k", "colossus"), "name of trillion-club"},
+	} {
+		if got := c.p.Tier(); got != c.want {
+			t.Errorf("%s: tier = %q, want %q", name, got, c.want)
+		}
+	}
+}
+
+// The tier order is a list in this package and the milestones are rules in the seed;
+// this is what keeps them the same list.
+func TestTheTiersAreTheSeedsTokenMilestonesInOrder(t *testing.T) {
+	var in struct{ rule.Program }
+	if err := json.Unmarshal(seedJSON, &in); err != nil {
+		t.Fatal(err)
+	}
+	type step struct {
+		tokens float64
+		badge  string
+	}
+	var steps []step
+	for _, r := range in.Rules {
+		if r.When.Event != "usage.tokens" {
+			continue
+		}
+		for _, c := range r.If {
+			if v, ok := c.Value.(float64); ok && c.Field == "tokens" && c.Op == rule.Gte {
+				for _, a := range r.Then {
+					if a.Type == rule.Do.Badge {
+						steps = append(steps, step{v, a.Badge})
+					}
+				}
+			}
+		}
+	}
+	slices.SortFunc(steps, func(a, b step) int {
+		switch {
+		case a.tokens < b.tokens:
+			return -1
+		case a.tokens > b.tokens:
+			return 1
+		}
+		return 0
+	})
+	var ids []string
+	for _, s := range steps {
+		ids = append(ids, s.badge)
+	}
+	if !slices.Equal(ids, tiers) {
+		t.Errorf("the seed's milestones, lowest first, are %v; tiers are %v", ids, tiers)
+	}
+	for _, id := range tiers {
+		if in.Program.Badge(id) == nil {
+			t.Errorf("the seed has no badge %s", id)
+		}
 	}
 }

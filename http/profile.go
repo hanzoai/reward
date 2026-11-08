@@ -1,6 +1,7 @@
 package http
 
 import (
+	"net/url"
 	"strings"
 
 	nethttp "net/http"
@@ -78,15 +79,21 @@ func (h handlers) show(c *zip.Ctx) error {
 	return c.JSON(nethttp.StatusOK, out)
 }
 
-// emblem draws a public profile as an SVG for a README: level, points and up to three
-// top badges. ?theme=dark|light and ?style=flat|card. It is refetched every time
-// (no-cache) and revalidated by ETag, so GitHub's image proxy follows the standing.
+// emblem draws a public profile as an SVG for a README. ?theme=dark|light,
+// ?style=flat|card, ?fields= a comma list of level, points, tokens and badges (default
+// level,points) and ?label= (default Hanzo, at most 24 characters) say how. The
+// options are read before the handle, so a bad one is 400 for every handle and says
+// nothing about whether it exists; a private profile and an unknown handle are the
+// same 404. It is refetched every time (no-cache) and revalidated by ETag, so
+// GitHub's image proxy follows the standing.
 func (h handlers) emblem(c *zip.Ctx) error {
 	handle, ok := strings.CutSuffix(c.Param("handle"), ".svg")
 	if !ok {
 		return h.answer(c, engine.ErrNotFound)
 	}
-	o, err := emblem.Parse(c.Query("theme"), c.Query("style"))
+	q := url.Values{}
+	c.Fiber().RequestCtx().QueryArgs().VisitAll(func(k, v []byte) { q.Add(string(k), string(v)) })
+	o, err := emblem.Parse(q)
 	if err != nil {
 		return h.answer(c, err)
 	}
@@ -94,7 +101,7 @@ func (h handlers) emblem(c *zip.Ctx) error {
 	if err != nil {
 		return h.answer(c, err)
 	}
-	card := emblem.Card{Handle: p.Handle, Level: p.LevelName, Points: p.Points}
+	card := emblem.Card{Handle: p.Handle, Level: p.LevelName, Points: p.Points, Tier: p.Tier()}
 	for _, f := range p.Top(3) {
 		card.Badges = append(card.Badges, f.Name)
 	}

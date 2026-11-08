@@ -10,7 +10,7 @@
 //	GET    /v1/reward/me/profile                                 the caller: their profile
 //	PUT    /v1/reward/me/profile                                 the caller: handle, public, links
 //	GET    /v1/reward/profile/:handle                            public, once the owner turns it on
-//	GET    /v1/reward/badge/:handle                              public: <handle>.svg, ?theme=dark|light&style=flat|card
+//	GET    /v1/reward/badge/:handle                              public: <handle>.svg, ?theme=dark|light&style=flat|card&fields=level,points,tokens,badges&label=
 //	GET    /v1/admin/reward/programs                             SuperAdmin
 //	POST   /v1/admin/reward/programs                             SuperAdmin
 //	GET    /v1/admin/reward/programs/:program                    SuperAdmin

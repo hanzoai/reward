@@ -17,7 +17,7 @@ and nothing else of it.
 | `ledger` | `Entry` (the append-only ledger), `Standing` (balances, level, badges), `Trail` (staff acts), `Past` (legacy backfill rows) |
 | `sponsor` | `Link`: who brought a member in, one per member |
 | `profile` | a subject's handle, public flag, links |
-| `emblem` | the SVG README badge, a pure function of a card |
+| `emblem` | the SVG README badge, a pure function of a card and its options |
 | `engine` | `Evaluate`, `Simulate`, `Approve`, `Reject`, `Reverse`, `Backfill`, program configuration, `Seed`, `Show`, `Explore` |
 | `credit` | `Client`: `engine.Credits` over commerce's `POST /v1/billing/credit` |
 | `http` | the routes (native zip, `Raw` handlers, gates read inside each handler) |
@@ -209,9 +209,38 @@ badges `{id, name, pillar, rarity, earnedAt}`, claim counts per pillar, links (h
 only). Never an email, org, subject id or redeemable balance; a private profile and an
 unknown handle are the same 404. Handles are unique by the conditional insert of an
 `h:` row. `GET /v1/reward/me/explore` is the active rules the caller has no live claim
-under, by pillar in order. `GET /v1/reward/badge/:handle.svg` (`?theme=dark|light&style=flat|card`)
-is `no-cache, max-age=0` with an ETag and 304s; all text is escaped; goldens in
-`emblem/testdata` (`go test ./emblem -update` rewrites them).
+under, by pillar in order.
+
+`GET /v1/reward/badge/:handle.svg` draws the same standing as an SVG for a README
+(package `emblem` renders a pure `Card`, package `http` serves it). Options, all in
+the query and all typed; anything else is a 400 (the usual refusal body):
+
+| Option | Grammar | Default |
+|---|---|---|
+| `theme` | `dark`, `light` (an empty value is the default) | `dark` |
+| `style` | `flat` (one line), `card` (an empty value is the default) | `flat` |
+| `fields` | comma list of `level`, `points`, `tokens`, `badges`: lowercase, in the order drawn, each at most once; sent empty, unknown, repeated or with an empty or padded name is a 400 | `level,points` |
+| `label` | the left label (the card's corner label): 1 to 24 characters counted as runes, one line (no control character, newline, or Unicode line/paragraph separator), valid UTF-8; sent empty is a 400 | `Hanzo` |
+
+`level` is the level's name; `points` the lifetime points; `tokens` is the NAME of the
+highest token milestone badge held (`Public.Tier`: First 100K, Million Token Club, Five
+Million, Ten Million, Century, Billionaire, Titan, Colossus, Trillion Club, the seed's
+`usage.tokens` badges; `tiers` in `engine/profile.go` is that order and a test ties it
+to the seed), never a token count; `badges` is the top three by rarity (legendary down to
+common), then the most recently earned (`Public.Top`). A field with nothing to show is
+left out, not drawn empty; with nothing at all to show a flat picture is the label alone.
+A flat picture says every field on one line in order, badge names joined by commas; a
+card says level, points and tokens under the handle and draws badges as a row of pills
+(no row, and a shorter card, when it has none), so on a card the place of `badges` in
+the list does not matter.
+
+Options are read before the handle: a bad option is the same 400 for a public profile,
+a private one and a handle nobody holds, so it cannot be used to ask whether a handle
+exists; a private profile and an unknown handle are the same 404. Headers are
+`no-cache, max-age=0` with an ETag over the drawn bytes (so any option that changes
+the picture changes the tag) and a 304 on a matching `If-None-Match`; all text is
+escaped; goldens in `emblem/testdata`, one per look (`go test ./emblem -update`
+rewrites them).
 
 ## Routes
 

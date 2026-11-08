@@ -132,17 +132,34 @@ func (e *Engine) Show(ctx context.Context, handle, slug string) (Public, error) 
 	return out, nil
 }
 
-// Top is the n badges a profile shows first: the rarest, then the earliest earned.
+// Top is the n badges a profile shows first: the rarest, then the most recently earned.
 func (p Public) Top(n int) []Face {
 	faces := slices.Clone(p.Badges)
 	slices.SortFunc(faces, func(a, b Face) int {
 		return cmp.Or(
 			cmp.Compare(b.Rarity.Rank(), a.Rarity.Rank()),
-			cmp.Compare(a.EarnedAt, b.EarnedAt),
+			cmp.Compare(b.EarnedAt, a.EarnedAt),
 			cmp.Compare(a.ID, b.ID),
 		)
 	})
 	return faces[:min(n, len(faces))]
+}
+
+// tiers are the ids of the token milestone badges, lowest first: the seed's
+// usage.tokens rules award them at 100K, 1M, 5M, 10M, 100M, 1B, 10B, 100B and 1T tokens.
+var tiers = []string{"first-100k", "million-token-club", "five-million", "ten-million", "century", "billionaire", "titan", "colossus", "trillion-club"}
+
+// Tier is the name of the highest token milestone badge the profile holds, or empty
+// when it holds none. It is the badge's name, never a count of tokens.
+func (p Public) Tier() string {
+	for _, id := range slices.Backward(tiers) {
+		for _, f := range p.Badges {
+			if f.ID == id {
+				return f.Name
+			}
+		}
+	}
+	return ""
 }
 
 // shown is the program a public profile is read in.
