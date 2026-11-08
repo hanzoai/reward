@@ -1,0 +1,14 @@
+# Canonical CI/CD config for hanzoai/reward — read by the hanzoai/ci reusable
+# (.github/workflows/cicd.yml) and by platform.hanzo.ai.
+#
+# A Go library: it ships from a tag as a module and builds no image, so there is
+# no `images:` and no `deploy:`. cloud imports it and mounts it as the reward
+# capability at /v1/reward; the rollout is cloud's.
+#
+# The tests run against a real store (SQLite through hanzoai/orm, a file per
+# test) and need no service, no network and no secret.
+test:
+  - name: vet
+    run: go vet ./...
+  - name: test
+    run: go test -count=1 ./...

@@ -1,0 +1,16 @@
+name: CI/CD
+# Every knob lives in /hanzo.yml; this is the ~7-line caller every repo has.
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+jobs:
+  cicd:
+    permissions:
+      contents: write
+      packages: write
+      id-token: write
+    uses: hanzoai/ci/.github/workflows/build.yml@v2
+    secrets: inherit
