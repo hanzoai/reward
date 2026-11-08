@@ -65,7 +65,7 @@ func TestCatalogListsEveryEventUnderAPillar(t *testing.T) {
 		t.Errorf("github.fork fields = %+v", fork.Fields)
 	}
 	b, _ := Type("github.badge")
-	if f, _ := b.Field("badge"); f.Kind != Choice || !slices.Equal(f.Values, []string{"built", "deploy"}) {
+	if f, _ := b.Field("badge"); f.Kind != Choice || !slices.Equal(f.Values, []string{"profile", "built", "deploy"}) {
 		t.Errorf("github.badge badge = %+v", f)
 	}
 }
