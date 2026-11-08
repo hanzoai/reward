@@ -12,9 +12,10 @@ and nothing else of it.
 |---|---|
 | `refuse` | the one error for input the engine will not take (HTTP 400) |
 | `catalog` | the typed events a rule may read, under five pillars (use, share, community, contribute, expert); `Event` and its validation |
-| `rule` | `Rule`, `Condition`, `Action`, `Limits`; `Program` (rules, budget, levels, badges, templates) |
+| `rule` | `Rule`, `Condition`, `Action`, `Limits`; `Program` (rules, budget, upline, levels, badges, templates) |
 | `claim` | `Claim` and `Step`; `Fold` turns steps into a status |
 | `ledger` | `Entry` (the append-only ledger), `Standing` (balances, level, badges), `Trail` (staff acts), `Past` (legacy backfill rows) |
+| `sponsor` | `Link`: who brought a member in, one per member |
 | `profile` | a subject's handle, public flag, links |
 | `emblem` | the SVG README badge, a pure function of a card |
 | `engine` | `Evaluate`, `Simulate`, `Approve`, `Reject`, `Reverse`, `Backfill`, program configuration, `Seed`, `Show`, `Explore` |
@@ -46,8 +47,8 @@ read-modify-write on any claim, step, ledger row or badge row.
   `reward:<claim>:<action index>`.
 - **Ids live in one column for all kinds** (`_entities.id` is a bare PK), so every kind
   has its own id space: `prg:` program, `clm_` claim, `stp_` step, `ent_` entry,
-  `p:` profile, `h:` handle. A subject named alice and a handle named alice are two
-  rows. Never use a bare string as an id.
+  `p:` profile, `h:` handle, `s:` sponsor link. A subject named alice and a handle
+  named alice are two rows. Never use a bare string as an id.
 - Filters use the camelCase of the Go field name (`Subject=` is `$.subject`), so a
   filtered field's JSON tag must equal it.
 - Configuration (programs, rules) is edited by people in admin, one at a time:
@@ -83,9 +84,10 @@ built); the rest can. Rejected and reversed claims free their limits and budget.
 - Limits count claims per subject that are pending, approved or awarded. `once` is
   `subject` or `subject+key` (with `keyField`); `perDay`/`perMonth` are UTC calendar
   day/month counts of claims, not points.
-- Program: `budget{pointsPerMonth, creditCentsPerMonth}` (0 = no bound), `levels`
-  (Hacker 0, Builder 100, Shipper 500, Core 2500, Legend 10000 in the seed), `badges`
-  (each with a pillar and a rarity, common by default), `templates`.
+- Program: `budget{pointsPerMonth, creditCentsPerMonth}` (0 = no bound), `upline`
+  (see Upline), `levels` (Hacker 0, Builder 100, Shipper 500, Core 2500, Legend 10000
+  in the seed), `badges` (each with a pillar and a rarity, common by default),
+  `templates`.
 - **Pillar** is on every rule (defaults to its event's) and every badge.
 
 ## Catalog
@@ -147,6 +149,41 @@ later values; everything else is inactive at 0 points. All are manual.
   on a delivered job rated 4.5 or more, once per subject; the emitter must send it
   on the fifth. Core and Legend also need non-referral activity (spec); not modeled.
 
+## Upline
+
+Points only, never money. A member has one **sponsor**, set once and never changed:
+the row `reward-sponsor` (`sponsor.Link`), id `s:<subject>`, written by `CreateIfAbsent`
+so the first writer wins. It is made by the catalog event `referral.linked`
+(pillar share, field `sponsor`, no evidence; the event's subject is the new member),
+which `Evaluate` handles before the rules run, so a staff-priced rule may read it like
+any event. It is refused (400) when the sponsor is the member or when the member is
+already above the sponsor in the chain (a cycle; the climb is 64 links). A second
+`referral.linked` for a member who has a sponsor changes nothing and is not an error;
+the event id still dedupes claims. The check-then-link is under `engine.reserve`, like
+limits: two replicas can still link a cycle at the same instant, and an award climbs
+only three links, so it ends.
+
+`Program.Upline` (`upline`) is the percentage for levels 1, 2 and 3 (1 = the member's
+sponsor, 2 = theirs, 3 = one more), at most three entries, each 0 to 100, refused
+otherwise when the program is saved; admin edits it with the header like budget and
+levels. Empty pays nothing. The seed is `[10, 5, 2]`.
+
+When `Approve` writes a claim with points P > 0, each level with a sponsor gets one
+ledger row, `Act=upline`, `Level` 1 to 3, on the sponsor, for `floor(P * pct / 100)`
+points (a share of 0 writes nothing), `Redeemable` false, id `EntryID(claim, level,
+"upline")`, carrying the claim. Retries rewrite the same ids. The chain and the
+percentages are read when the claim is written. Only claims pay: upline rows are not
+claims and pay none, and legacy backfill rows make no claims. The rows count toward
+lifetime points, levels and rank and never toward redeemable (the fold ignores the
+flag on them, as on legacy rows).
+
+`Reverse` undoes them with the claim's own rows: `Act=reversal`, negative points,
+`Reverses` the upline row, `Level` copied. `GET /v1/reward/me` adds per program
+`network: {level1, level2, level3, points}`: the members one, two and three links
+below the caller (each level counted from the previous level's members, stopping at
+10,000), and the caller's upline rows less their reversals. It is for the caller only;
+the public profile and the badge never show it.
+
 ## Legacy backfill
 
 `Backfill(ctx, program, rows, by)`: rows `{subject, source, points, evidence}`,
@@ -180,7 +217,7 @@ Public/self under `/v1/reward`, admin under `/v1/admin/reward` (cloud's conventi
 GET  /v1/reward/health
 GET  /v1/reward/catalog                       public
 POST /v1/reward/events                        platform: ingest
-GET  /v1/reward/me                            caller
+GET  /v1/reward/me                            caller (balances, level, badges, network)
 GET  /v1/reward/me/claims                     caller
 GET  /v1/reward/me/explore                    caller
 GET|PUT /v1/reward/me/profile                 caller

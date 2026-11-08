@@ -103,13 +103,14 @@ func TestTheSameEventAfterTheRuleChangedIsStillOneClaim(t *testing.T) {
 
 func TestConcurrentDeliveriesOfOneEventMakeOneClaim(t *testing.T) {
 	r := newRig(t, nil, star("s", pts(10, true)))
-	ev := r.starEvent("e1", "alice", "x")
 	var wg sync.WaitGroup
 	for range 16 {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
-			if _, err := r.e.Evaluate(r.ctx, ev); err != nil {
+			// each delivery is its own request, so its own event: Validate settles
+			// the event in place and an Evidence pointer must not be shared.
+			if _, err := r.e.Evaluate(r.ctx, r.starEvent("e1", "alice", "x")); err != nil {
 				t.Error(err)
 			}
 		}()

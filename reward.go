@@ -10,6 +10,7 @@
 //	rule     rules and the program that holds them
 //	claim    one subject's claim to one rule's award, and the steps that decide it
 //	ledger   the append-only points ledger and the trail of staff acts
+//	sponsor  who brought a member in, one link per member
 //	engine   Evaluate, Approve, Reject, Reverse, and the program's configuration
 //	credit   the client for commerce's one credit path
 //	http     the routes
@@ -29,6 +30,7 @@ import (
 	"github.com/hanzoai/reward/http"
 	"github.com/hanzoai/reward/ledger"
 	"github.com/hanzoai/reward/rule"
+	"github.com/hanzoai/reward/sponsor"
 )
 
 // Config is what a host gives the module.
@@ -62,7 +64,7 @@ func Mount(app *zip.App, cfg Config) (*engine.Engine, error) {
 	if log == nil {
 		log = slog.Default()
 	}
-	if err := orm.Ready(cfg.DB, rule.Kind, claim.Kind, claim.StepKind, ledger.Kind, ledger.TrailKind); err != nil {
+	if err := orm.Ready(cfg.DB, rule.Kind, claim.Kind, claim.StepKind, ledger.Kind, ledger.TrailKind, sponsor.Kind); err != nil {
 		return nil, fmt.Errorf("reward.Mount: %w", err)
 	}
 	e := &engine.Engine{

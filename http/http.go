@@ -4,7 +4,7 @@
 //	GET    /v1/reward/health                                     public
 //	GET    /v1/reward/catalog                                    public
 //	POST   /v1/reward/events                                     platform: ingest
-//	GET    /v1/reward/me                                         the caller: balances, level, badges
+//	GET    /v1/reward/me                                         the caller: balances, level, badges, network
 //	GET    /v1/reward/me/claims                                  the caller: claims
 //	GET    /v1/reward/me/explore                                 the caller: active rules not yet earned, by pillar
 //	GET    /v1/reward/me/profile                                 the caller: their profile
@@ -204,14 +204,22 @@ func (h handlers) ingest(c *zip.Ctx) error {
 	return c.JSON(nethttp.StatusOK, out)
 }
 
+// standing is the caller's account in one program and their network there. The
+// network is the caller's alone: no public view carries it.
+type standing struct {
+	ledger.Account
+	Network engine.Network `json:"network"`
+}
+
 type mine struct {
-	Subject  string           `json:"subject"`
-	Programs []ledger.Account `json:"programs"`
+	Subject  string     `json:"subject"`
+	Programs []standing `json:"programs"`
 }
 
 // me answers the caller's own standing in every active program: lifetime and
-// redeemable points, level, next level and badges. The subject is the caller's, from
-// the edge, never from the request.
+// redeemable points, level, next level, badges, and the network of members they
+// brought in with the upline points it paid. The subject is the caller's, from the
+// edge, never from the request.
 func (h handlers) me(c *zip.Ctx) error {
 	w, ok := member(c)
 	if !ok {
@@ -221,7 +229,7 @@ func (h handlers) me(c *zip.Ctx) error {
 	if err != nil {
 		return h.answer(c, err)
 	}
-	out := mine{Subject: w.subject, Programs: []ledger.Account{}}
+	out := mine{Subject: w.subject, Programs: []standing{}}
 	for _, p := range progs {
 		if !p.Active {
 			continue
@@ -230,7 +238,11 @@ func (h handlers) me(c *zip.Ctx) error {
 		if err != nil {
 			return h.answer(c, err)
 		}
-		out.Programs = append(out.Programs, a)
+		n, err := h.e.Network(c.Context(), p.Slug(), w.subject)
+		if err != nil {
+			return h.answer(c, err)
+		}
+		out.Programs = append(out.Programs, standing{a, n})
 	}
 	return c.JSON(nethttp.StatusOK, out)
 }

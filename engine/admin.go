@@ -66,15 +66,15 @@ func fingerprint(p *rule.Program) string {
 	return marshal(struct {
 		Name   string
 		Active bool
-		B, L   any
-		Bd, T  any
-		R      any
-	}{p.Name, p.Active, p.Budget, p.Levels, p.Badges, p.Templates, p.Rules})
+		B, U   any
+		L, Bd  any
+		T, R   any
+	}{p.Name, p.Active, p.Budget, p.Upline, p.Levels, p.Badges, p.Templates, p.Rules})
 }
 
 // SaveProgram creates the program slug, with in.Rules, or changes the header of the
-// one that exists: its name, whether it is active, its budget, levels, badges and
-// templates. A stored program keeps its rules whatever in.Rules says; they are
+// one that exists: its name, whether it is active, its budget, upline, levels,
+// badges and templates. A stored program keeps its rules whatever in.Rules says; they are
 // changed one at a time by SaveRule. Saving what is already stored changes and
 // records nothing. by is who made the change.
 //
@@ -101,7 +101,7 @@ func (e *Engine) SaveProgram(ctx context.Context, slug string, in rule.Program, 
 	} else {
 		before = fingerprint(p)
 	}
-	p.Name, p.Active, p.Budget = strings.TrimSpace(in.Name), in.Active, in.Budget
+	p.Name, p.Active, p.Budget, p.Upline = strings.TrimSpace(in.Name), in.Active, in.Budget, in.Upline
 	p.Levels, p.Badges, p.Templates = in.Levels, in.Badges, in.Templates
 	if err := e.validate(p); err != nil {
 		return nil, err

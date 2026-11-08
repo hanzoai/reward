@@ -31,13 +31,19 @@ func init() {
 const (
 	// Award is a row that adds to a subject's ledger.
 	Award = "award"
-	// Reversal is a row that undoes an Award: a compensating entry, never an edit.
+	// Reversal is a row that undoes an Award or an Upline row: a compensating entry,
+	// never an edit.
 	Reversal = "reversal"
 	// Legacy is a row of points a subject earned before the ledger, grandfathered
 	// in by a backfill. It counts toward lifetime points, levels and rank and never
 	// toward redeemable points: it is not an award of any rule, and credit is only
 	// ever for what a rule awarded.
 	Legacy = "legacy"
+	// Upline is a row of points paid to a sponsor out of a claim a member they
+	// brought in was awarded. It counts toward lifetime points, levels and rank and
+	// never toward redeemable points; it is not a claim, so it pays no upline of its
+	// own. A reversal of the claim undoes it with a Reversal row, as it does an Award.
+	Upline = "upline"
 )
 
 // Entry is one row of the ledger. A row is written once and never changed. An
@@ -51,7 +57,7 @@ type Entry struct {
 	Rule        string `json:"rule"`
 	RuleVersion int    `json:"ruleVersion"`
 
-	// Act is Award or Reversal.
+	// Act is Award, Reversal, Legacy or Upline.
 	Act string `json:"kind"`
 	// Points is signed: a reversal of an award of 50 is -50.
 	Points int64 `json:"points,omitempty"`
@@ -62,6 +68,9 @@ type Entry struct {
 	Badge string `json:"badge,omitempty"`
 	// Reverses is the id of the entry a reversal undoes.
 	Reverses string `json:"reverses,omitempty"`
+	// Level is how far above the claim's subject the row's subject sits, 1 to 3: set
+	// on an Upline row and on the Reversal of one, and 0 on every other.
+	Level int `json:"level,omitempty"`
 
 	// Source, Evidence and By are what a legacy row says about itself: the thing
 	// the points were earned for (one of Sources), what the count was taken from,
@@ -150,7 +159,7 @@ func Standing(ctx context.Context, db orm.DB, p *rule.Program, subject string) (
 	since := map[string]time.Time{}
 	for _, x := range rows {
 		a.Lifetime += x.Points
-		if x.Redeemable && x.Act != Legacy {
+		if x.Redeemable && x.Act != Legacy && x.Act != Upline {
 			a.Redeemable += x.Points
 		}
 		if x.Badge == "" {

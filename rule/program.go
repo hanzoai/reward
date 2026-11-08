@@ -22,6 +22,10 @@ type Budget struct {
 	CreditCentsPerMonth int64 `json:"creditCentsPerMonth"`
 }
 
+// UplineDepth is how many sponsors above a member an award pays: their sponsor, that
+// sponsor's sponsor, and one more.
+const UplineDepth = 3
+
 // Level is a standing, reached at MinLifetimePoints.
 type Level struct {
 	// Level is the standing's number, from 1.
@@ -64,9 +68,9 @@ type Badge struct {
 }
 
 // Program is the set of rules that decide who earns what, the budget they spend,
-// the levels points reach and the badges they award. The store holds one document
-// per program, under its slug as the id; admin.hanzo.ai edits it, and the seed
-// only creates it.
+// the levels points reach, the badges they award and the share of an award that goes
+// up the sponsor chain. The store holds one document per program, under its slug as
+// the id; admin.hanzo.ai edits it, and the seed only creates it.
 type Program struct {
 	orm.Model[Program]
 
@@ -77,7 +81,12 @@ type Program struct {
 	// changes.
 	Version int `json:"version"`
 
-	Budget    Budget     `json:"budget"`
+	Budget Budget `json:"budget"`
+	// Upline is the percentage of a claim's points paid, as points that count
+	// toward lifetime and never toward redeemable, to the sponsor at each level
+	// above the member: [0] their sponsor, [1] that sponsor's sponsor, [2] one more.
+	// At most UplineDepth entries, each 0 to 100; empty pays no upline.
+	Upline    []int      `json:"upline"`
 	Levels    []Level    `json:"levels"`
 	Badges    []Badge    `json:"badges"`
 	Templates []Template `json:"templates"`
@@ -95,6 +104,7 @@ type View struct {
 	Active    bool       `json:"active"`
 	Version   int        `json:"version"`
 	Budget    Budget     `json:"budget"`
+	Upline    []int      `json:"upline"`
 	Levels    []Level    `json:"levels"`
 	Badges    []Badge    `json:"badges"`
 	Templates []Template `json:"templates"`
@@ -105,7 +115,7 @@ type View struct {
 
 // View is p as callers see it.
 func (p *Program) View() View {
-	return View{ID: p.Slug(), Name: p.Name, Active: p.Active, Version: p.Version, Budget: p.Budget,
+	return View{ID: p.Slug(), Name: p.Name, Active: p.Active, Version: p.Version, Budget: p.Budget, Upline: nonNil(p.Upline),
 		Levels: nonNil(p.Levels), Badges: nonNil(p.Badges), Templates: nonNil(p.Templates), Rules: nonNil(p.Rules),
 		CreatedAt: p.CreatedAt, UpdatedAt: p.UpdatedAt}
 }
@@ -174,6 +184,14 @@ func (p *Program) Validate() error {
 	}
 	if p.Budget.PointsPerMonth < 0 || p.Budget.CreditCentsPerMonth < 0 {
 		return refuse.New("a budget must not be negative; 0 is no bound")
+	}
+	if len(p.Upline) > UplineDepth {
+		return refuse.New("upline takes at most %d percentages, one for each level above a member; %d were given", UplineDepth, len(p.Upline))
+	}
+	for i, pct := range p.Upline {
+		if pct < 0 || pct > 100 {
+			return refuse.New("upline level %d is %d; a percentage is from 0 to 100", i+1, pct)
+		}
 	}
 	for i, l := range p.Levels {
 		switch {

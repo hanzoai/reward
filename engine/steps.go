@@ -142,8 +142,9 @@ func (e *Engine) Approve(ctx context.Context, id, reviewer string) (*claim.Claim
 	return c, nil
 }
 
-// write puts everything the claim earns in the ledger and the credit book. Every
-// write is keyed by the claim and the action, so running it twice writes once.
+// write puts everything the claim earns in the ledger and the credit book, and the
+// upline its points pay. Every write is keyed by the claim and the action, so
+// running it twice writes once.
 func (e *Engine) write(ctx context.Context, c *claim.Claim) error {
 	for i, a := range c.Then {
 		switch a.Type {
@@ -176,14 +177,18 @@ func (e *Engine) write(ctx context.Context, c *claim.Claim) error {
 			}
 		}
 	}
-	return nil
+	return e.pay(ctx, c)
 }
 
 // put writes the ledger row x for claim c, once: its id is a hash of the claim, the
-// slot it fills and what it does, so a second write of it is a no-op.
+// slot it fills and what it does, so a second write of it is a no-op. The row is the
+// claim's subject's unless x names another, as an upline row names a sponsor.
 func (e *Engine) put(ctx context.Context, c *claim.Claim, slot string, x *ledger.Entry) error {
 	x.SetId(ledger.EntryID(c.Id(), slot, x.Act))
-	x.Program, x.Subject, x.Claim, x.Rule, x.RuleVersion = c.Program, c.Subject, c.Id(), c.Rule, c.RuleVersion
+	x.Program, x.Claim, x.Rule, x.RuleVersion = c.Program, c.Id(), c.Rule, c.RuleVersion
+	if x.Subject == "" {
+		x.Subject = c.Subject
+	}
 	x.At = e.now()
 	x.CreatedAt, x.UpdatedAt = x.At, x.At
 	if _, err := e.DB.CreateIfAbsent(ctx, x.Key(), x); err != nil {
@@ -224,7 +229,8 @@ func (e *Engine) Reject(ctx context.Context, id, reviewer, note string) (*claim.
 }
 
 // Reverse undoes an awarded claim with compensating entries: the points and badges
-// it wrote are taken back by rows of their own, and the rows it wrote stay. Credit
+// it wrote, and the upline points it paid, are taken back by rows of their own, and
+// the rows it wrote stay. Credit
 // already granted is money in an org's ledger and is not taken back here, so a
 // claim that granted any cannot be reversed.
 func (e *Engine) Reverse(ctx context.Context, id, reviewer, note string) (*claim.Claim, error) {
@@ -253,11 +259,11 @@ func (e *Engine) Reverse(ctx context.Context, id, reviewer, note string) (*claim
 		return nil, err
 	}
 	for _, x := range rows {
-		if x.Act != ledger.Award {
+		if x.Act != ledger.Award && x.Act != ledger.Upline {
 			continue
 		}
 		undo := orm.New[ledger.Entry](e.DB)
-		undo.Act, undo.Points, undo.Redeemable, undo.Badge, undo.Reverses = ledger.Reversal, -x.Points, x.Redeemable, x.Badge, x.Id()
+		undo.Act, undo.Subject, undo.Points, undo.Redeemable, undo.Badge, undo.Level, undo.Reverses = ledger.Reversal, x.Subject, -x.Points, x.Redeemable, x.Badge, x.Level, x.Id()
 		if err := e.put(ctx, c, x.Id(), undo); err != nil {
 			return nil, err
 		}

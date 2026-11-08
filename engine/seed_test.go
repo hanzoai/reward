@@ -2,6 +2,7 @@ package engine
 
 import (
 	"context"
+	"slices"
 	"testing"
 
 	"github.com/hanzoai/reward/catalog"
@@ -53,6 +54,10 @@ func TestTheSeedHoldsTheApprovedValuesAndNothingElseIsOn(t *testing.T) {
 		if wantLevels[l.Name] != l.MinLifetimePoints {
 			t.Errorf("level %s = %d", l.Name, l.MinLifetimePoints)
 		}
+	}
+	// the upline pays 10%, 5% and 2% of a claim's points to the three sponsors above.
+	if !slices.Equal(p.Upline, []int{10, 5, 2}) {
+		t.Errorf("upline = %v, want [10 5 2]", p.Upline)
 	}
 	// the one hard ceiling the spec states: $500 a month of credit.
 	if p.Budget.CreditCentsPerMonth != 50_000 || p.Budget.PointsPerMonth != 0 {

@@ -40,7 +40,7 @@ func (e *Engine) Seed(ctx context.Context) (bool, error) {
 	}
 	p := orm.New[rule.Program](e.DB)
 	p.SetId(rule.ProgramID(in.ID))
-	p.Name, p.Active, p.Budget = in.Name, in.Active, in.Budget
+	p.Name, p.Active, p.Budget, p.Upline = in.Name, in.Active, in.Budget, in.Upline
 	p.Levels, p.Badges, p.Templates, p.Version = in.Levels, in.Badges, in.Templates, 1
 	for _, r := range in.Rules {
 		r.Version = 1

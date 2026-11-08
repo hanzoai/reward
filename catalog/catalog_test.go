@@ -31,7 +31,7 @@ func TestCatalogListsEveryEventUnderAPillar(t *testing.T) {
 	}
 	want := map[string]Pillar{
 		"usage.tokens": Use, "product.used": Use, "model.used": Use,
-		"referral.activated": Share, "referral.retained": Share, "social.post.verified": Share,
+		"referral.activated": Share, "referral.retained": Share, "referral.linked": Share, "social.post.verified": Share,
 		"discord.joined": Community, "github.star": Community, "github.follow": Community,
 		"github.fork": Contribute, "github.badge": Contribute,
 		"github.issue.accepted": Contribute, "github.pr.merged": Contribute, "submission.video": Contribute,
@@ -55,6 +55,10 @@ func TestCatalogListsEveryEventUnderAPillar(t *testing.T) {
 	job, _ := Type("expert.job.delivered")
 	if f, _ := job.Field("rating"); f.Kind != Real {
 		t.Errorf("rating = %+v, want a real number", f)
+	}
+	linked, ok := Type("referral.linked")
+	if !ok || linked.Title != "Referral linked" || linked.Evidence || len(linked.Fields) != 1 || linked.Fields[0].Name != "sponsor" || linked.Fields[0].Kind != Text {
+		t.Errorf("referral.linked = %+v", linked)
 	}
 	fork, _ := Type("github.fork")
 	if len(fork.Fields) != 2 || fork.Fields[0].Name != "repo" || fork.Fields[1].Name != "forker" {
