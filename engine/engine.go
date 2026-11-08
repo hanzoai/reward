@@ -131,11 +131,18 @@ const (
 
 // Evaluate makes a claim for every active rule of every active program that reads
 // ev and is satisfied by it, within limits and budget. A claim whose rule is auto
-// is approved as it is made. The same event again makes no second claim.
+// is approved as it is made. The same event again makes no second claim. A
+// referral.linked event first links its subject to the sponsor it names, and is
+// refused if that cannot be; then the rules read it like any other.
 func (e *Engine) Evaluate(ctx context.Context, ev catalog.Event) (Outcome, error) {
 	out := Outcome{Event: ev.ID, Decisions: []Decision{}}
 	if err := ev.Validate(); err != nil {
 		return out, err
+	}
+	if ev.Type == catalog.Linked {
+		if err := e.link(ctx, ev); err != nil {
+			return out, err
+		}
 	}
 	progs, err := e.Programs(ctx)
 	if err != nil {

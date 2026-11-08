@@ -6,6 +6,11 @@
   "pointsPerMonth": 0,
   "creditCentsPerMonth": 50000
  },
+ "upline": [
+  10,
+  5,
+  2
+ ],
  "levels": [
   {
    "level": 1,
