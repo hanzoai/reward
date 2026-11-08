@@ -91,6 +91,7 @@ type Public struct {
 	Handle    string         `json:"handle"`
 	Level     int            `json:"level"`
 	LevelName string         `json:"levelName"`
+	Band      string         `json:"band"`
 	Points    int64          `json:"points"`
 	Badges    []Face         `json:"badges"`
 	Pillars   map[string]int `json:"pillars"`
@@ -125,7 +126,7 @@ func (e *Engine) Show(ctx context.Context, handle, slug string) (Public, error) 
 	if err != nil {
 		return out, err
 	}
-	out = Public{Handle: p.Handle, Level: a.Level.Level, LevelName: a.Level.Name, Points: a.Lifetime, Pillars: counts, Links: p.Links, Badges: []Face{}}
+	out = Public{Handle: p.Handle, Level: a.Level.Level, LevelName: a.Level.Name, Band: a.Band, Points: a.Lifetime, Pillars: counts, Links: p.Links, Badges: []Face{}}
 	for _, b := range a.Badges {
 		out.Badges = append(out.Badges, Face{ID: b.ID, Name: b.Name, Pillar: b.Pillar, Rarity: b.Rarity, EarnedAt: b.EarnedAt.Format("2006-01-02T15:04:05Z")})
 	}

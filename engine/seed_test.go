@@ -1,8 +1,11 @@
 package engine
 
 import (
+	"cmp"
 	"context"
+	"fmt"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/hanzoai/reward/catalog"
@@ -45,16 +48,6 @@ func TestTheSeedHoldsTheApprovedValuesAndNothingElseIsOn(t *testing.T) {
 	}
 	p, _ := e.Program(ctx, "hanzo-rewards")
 
-	// levels: Hacker 0, Builder 100, Shipper 500, Core 2500, Legend 10000
-	wantLevels := map[string]int64{"Hacker": 0, "Builder": 100, "Shipper": 500, "Core": 2500, "Legend": 10000}
-	if len(p.Levels) != len(wantLevels) {
-		t.Fatalf("levels = %+v", p.Levels)
-	}
-	for _, l := range p.Levels {
-		if wantLevels[l.Name] != l.MinLifetimePoints {
-			t.Errorf("level %s = %d", l.Name, l.MinLifetimePoints)
-		}
-	}
 	// the upline pays 10%, 5% and 2% of a claim's points to the three sponsors above.
 	if !slices.Equal(p.Upline, []int{10, 5, 2}) {
 		t.Errorf("upline = %v, want [10 5 2]", p.Upline)
@@ -100,10 +93,15 @@ func TestTheSeedHoldsTheApprovedValuesAndNothingElseIsOn(t *testing.T) {
 		}
 	}
 
-	// every rule is manual, and a rule that is not in the approved spec is off at 0.
+	// every rule is manual, and a rule that is not in the approved spec is off at 0,
+	// except the owner's later additions (TestTheSeedHoldsTheTenureStreakFounderAndReferralRules).
 	inSpec := map[string]bool{}
 	for id := range approved {
 		inSpec[id] = true
+	}
+	later := map[string]bool{"founding-developer": true, "referral-network": true}
+	for _, c := range counted {
+		later[c.rule] = true
 	}
 	var off, on int
 	for _, r := range p.Rules {
@@ -118,6 +116,12 @@ func TestTheSeedHoldsTheApprovedValuesAndNothingElseIsOn(t *testing.T) {
 		}
 		if inSpec[r.ID] {
 			on++
+			continue
+		}
+		if later[r.ID] {
+			if !r.Active {
+				t.Errorf("%s is off; the owner approved it", r.ID)
+			}
 			continue
 		}
 		off++
@@ -182,5 +186,164 @@ func TestTheWeeklyShareRuleIsSeededOffAndKeyedByNetworkAndWeek(t *testing.T) {
 	}
 	if l := r.Limits; l.Once != rule.Keyed || l.KeyField != "network+week" {
 		t.Errorf("limits = %+v, want once per subject, network and week", l)
+	}
+}
+
+// counted are the badge-only rules the owner added: one badge when an event carries
+// exactly this number. Their badges are in the program's list under the same pillar
+// as the rule, and a common one has no rarity written.
+var counted = []struct {
+	rule, event, field string
+	n                  int
+	badge, name        string
+	rarity             rule.Rarity
+	pillar             catalog.Pillar
+}{
+	{"tenure-1", "tenure.reached", "months", 1, "one-month", "One Month", rule.Common, catalog.Use},
+	{"tenure-6", "tenure.reached", "months", 6, "six-months", "Six Months", rule.Uncommon, catalog.Use},
+	{"tenure-12", "tenure.reached", "months", 12, "yearling", "Yearling", rule.Rare, catalog.Use},
+	{"tenure-24", "tenure.reached", "months", 24, "two-years", "Two Years", rule.Epic, catalog.Use},
+	{"tenure-36", "tenure.reached", "months", 36, "three-years", "Three Years", rule.Legendary, catalog.Use},
+	{"streak-7", "streak.reached", "days", 7, "week-streak", "Week Streak", rule.Common, catalog.Use},
+	{"streak-30", "streak.reached", "days", 30, "month-streak", "Month Streak", rule.Rare, catalog.Use},
+	{"streak-100", "streak.reached", "days", 100, "hundred-days", "Hundred Days", rule.Epic, catalog.Use},
+	{"referral-milestone-5", "referral.milestone", "count", 5, "spark", "Spark", rule.Common, catalog.Share},
+	{"referral-milestone-10", "referral.milestone", "count", 10, "signal", "Signal", rule.Common, catalog.Share},
+	{"referral-milestone-15", "referral.milestone", "count", 15, "beacon", "Beacon", rule.Uncommon, catalog.Share},
+	{"referral-milestone-20", "referral.milestone", "count", 20, "current", "Current", rule.Uncommon, catalog.Share},
+	{"referral-milestone-25", "referral.milestone", "count", 25, "catalyst", "Catalyst", rule.Rare, catalog.Share},
+	{"referral-milestone-30", "referral.milestone", "count", 30, "amplifier", "Amplifier", rule.Rare, catalog.Share},
+	{"referral-milestone-35", "referral.milestone", "count", 35, "orbit", "Orbit", rule.Epic, catalog.Share},
+	{"referral-milestone-40", "referral.milestone", "count", 40, "constellation", "Constellation", rule.Epic, catalog.Share},
+	{"referral-milestone-45", "referral.milestone", "count", 45, "nova", "Nova", rule.Epic, catalog.Share},
+	{"referral-milestone-50", "referral.milestone", "count", 50, "supernova", "Supernova", rule.Legendary, catalog.Share},
+	{"referral-milestone-100", "referral.milestone", "count", 100, "cosmos-i", "Cosmos I", rule.Legendary, catalog.Share},
+	{"referral-milestone-150", "referral.milestone", "count", 150, "cosmos-ii", "Cosmos II", rule.Legendary, catalog.Share},
+	{"referral-milestone-200", "referral.milestone", "count", 200, "cosmos-iii", "Cosmos III", rule.Legendary, catalog.Share},
+	{"referral-milestone-250", "referral.milestone", "count", 250, "cosmos-iv", "Cosmos IV", rule.Legendary, catalog.Share},
+	{"referral-milestone-300", "referral.milestone", "count", 300, "cosmos-v", "Cosmos V", rule.Legendary, catalog.Share},
+	{"referral-milestone-350", "referral.milestone", "count", 350, "cosmos-vi", "Cosmos VI", rule.Legendary, catalog.Share},
+	{"referral-milestone-400", "referral.milestone", "count", 400, "cosmos-vii", "Cosmos VII", rule.Legendary, catalog.Share},
+	{"referral-milestone-450", "referral.milestone", "count", 450, "cosmos-viii", "Cosmos VIII", rule.Legendary, catalog.Share},
+	{"referral-milestone-500", "referral.milestone", "count", 500, "cosmos-ix", "Cosmos IX", rule.Legendary, catalog.Share},
+	{"referral-milestone-550", "referral.milestone", "count", 550, "cosmos-x", "Cosmos X", rule.Legendary, catalog.Share},
+}
+
+func TestTheSeedHoldsTheTenureStreakFounderAndReferralRules(t *testing.T) {
+	ctx := context.Background()
+	e := &Engine{DB: openDB(t)}
+	if _, err := e.Seed(ctx); err != nil {
+		t.Fatal(err)
+	}
+	p, _ := e.Program(ctx, "hanzo-rewards")
+	for _, c := range counted {
+		r := p.Find(c.rule)
+		if r == nil {
+			t.Errorf("missing rule %s", c.rule)
+			continue
+		}
+		if !r.Active || r.Approval != rule.Manual || r.Version != 1 || r.Pillar != c.pillar || r.When.Event != c.event {
+			t.Errorf("%s = %+v, want active, manual, version 1, pillar %s on %s", c.rule, r, c.pillar, c.event)
+		}
+		if len(r.If) != 1 || r.If[0] != (rule.Condition{Field: c.field, Op: rule.Eq, Value: float64(c.n)}) {
+			t.Errorf("%s if = %+v, want %s eq %d", c.rule, r.If, c.field, c.n)
+		}
+		// badge only: the one action is the badge, with no points action beside it.
+		if len(r.Then) != 1 || r.Then[0] != (rule.Action{Type: rule.Do.Badge, Badge: c.badge}) {
+			t.Errorf("%s then = %+v, want only the badge %s", c.rule, r.Then, c.badge)
+		}
+		if r.Limits != (rule.Limits{Once: rule.Keyed, KeyField: c.field}) {
+			t.Errorf("%s limits = %+v, want once per subject and %s", c.rule, r.Limits, c.field)
+		}
+		b := p.Badge(c.badge)
+		if b == nil || b.Name != c.name || b.Pillar != c.pillar || cmp.Or(b.Rarity, rule.Common) != c.rarity {
+			t.Errorf("%s: badge = %+v, want %s %s %s", c.rule, b, c.name, c.pillar, c.rarity)
+		}
+	}
+
+	f := p.Find("founding-developer")
+	if f == nil || !f.Active || f.Approval != rule.Manual || f.Pillar != catalog.Community || f.When.Event != "founder.eligible" || len(f.If) != 0 ||
+		len(f.Then) != 1 || f.Then[0] != (rule.Action{Type: rule.Do.Badge, Badge: "founding-developer"}) || f.Limits != (rule.Limits{Once: rule.Subject}) {
+		t.Errorf("founding-developer = %+v", f)
+	}
+	if b := p.Badge("founding-developer"); b == nil || b.Name != "Founding Developer" || b.Pillar != catalog.Community || b.Rarity != rule.Legendary {
+		t.Errorf("founding-developer badge = %+v", b)
+	}
+
+	n := p.Find("referral-network")
+	if n == nil || !n.Active || n.Approval != rule.Manual || n.Pillar != catalog.Share || n.When.Event != "referral.network" || len(n.If) != 0 ||
+		len(n.Then) != 1 || n.Then[0] != (rule.Action{Type: rule.Do.Points, Points: 1}) || n.Limits != (rule.Limits{Once: rule.Keyed, KeyField: "referee"}) {
+		t.Errorf("referral-network = %+v", n)
+	}
+
+	// the Cosmos series is ten badges, I to X, at every 50 referrals from 100 to 550.
+	var cosmos []string
+	for _, c := range counted {
+		if strings.HasPrefix(c.badge, "cosmos-") {
+			cosmos = append(cosmos, c.name)
+			if c.n < 100 || c.n > 550 || c.n%50 != 0 {
+				t.Errorf("%s is at %d", c.name, c.n)
+			}
+		}
+	}
+	if !slices.Equal(cosmos, []string{"Cosmos I", "Cosmos II", "Cosmos III", "Cosmos IV", "Cosmos V", "Cosmos VI", "Cosmos VII", "Cosmos VIII", "Cosmos IX", "Cosmos X"}) {
+		t.Errorf("cosmos = %v", cosmos)
+	}
+
+	if len(counted) != 28 {
+		t.Errorf("counted rules = %d, want 8 + 20", len(counted))
+	}
+	// the program knows nothing of a founding cutoff: the owner sets the date.
+	if p.FoundingCutoff != "" {
+		t.Errorf("seeded foundingCutoff = %q, want none", p.FoundingCutoff)
+	}
+}
+
+func TestTheSeedHasHundredLevelsInTenBands(t *testing.T) {
+	ctx := context.Background()
+	e := &Engine{DB: openDB(t)}
+	if _, err := e.Seed(ctx); err != nil {
+		t.Fatal(err)
+	}
+	p, _ := e.Program(ctx, "hanzo-rewards")
+	if len(p.Levels) != 100 {
+		t.Fatalf("levels = %d, want 100", len(p.Levels))
+	}
+	bands := []string{"Photon", "Wave", "Focus", "Flare", "Comet", "Pulsar", "Nebula", "Quasar", "Magnetar", "Singularity"}
+	for n, l := range p.Levels {
+		band := bands[n/10]
+		if l.Level != n || l.MinLifetimePoints != int64(10*n*n) || l.Band != band || l.Name != fmt.Sprintf("%s %d", band, n) {
+			t.Errorf("level %d = %+v, want %s %d at %d points", n, l, band, n, 10*n*n)
+		}
+	}
+	// the thresholds the owner named, and the bands at the boundaries.
+	for _, c := range []struct {
+		n      int
+		points int64
+		name   string
+	}{{0, 0, "Photon 0"}, {1, 10, "Photon 1"}, {9, 810, "Photon 9"}, {10, 1000, "Wave 10"}, {49, 24010, "Comet 49"}, {50, 25000, "Pulsar 50"}, {99, 98010, "Singularity 99"}} {
+		if l := p.Levels[c.n]; l.MinLifetimePoints != c.points || l.Name != c.name {
+			t.Errorf("level %d = %+v, want %s at %d", c.n, l, c.name, c.points)
+		}
+	}
+	// one point short of a level is the level below.
+	for _, c := range []struct {
+		points int64
+		level  int
+		name   string
+		band   string
+	}{
+		{0, 0, "Photon 0", "Photon"}, {9, 0, "Photon 0", "Photon"}, {10, 1, "Photon 1", "Photon"},
+		{999, 9, "Photon 9", "Photon"}, {1000, 10, "Wave 10", "Wave"},
+		{24_999, 49, "Comet 49", "Comet"}, {25_000, 50, "Pulsar 50", "Pulsar"},
+		{98_009, 98, "Singularity 98", "Singularity"}, {98_010, 99, "Singularity 99", "Singularity"}, {10_000_000, 99, "Singularity 99", "Singularity"},
+	} {
+		l, next := p.LevelOf(c.points)
+		if l.Level != c.level || l.Name != c.name || l.Band != c.band {
+			t.Errorf("%d points: %+v, want %s (%s)", c.points, l, c.name, c.band)
+		}
+		if (next == nil) != (c.level == 99) || (next != nil && next.Level != c.level+1) {
+			t.Errorf("%d points: next = %+v", c.points, next)
+		}
 	}
 }

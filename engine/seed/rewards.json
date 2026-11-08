@@ -13,29 +13,604 @@
  ],
  "levels": [
   {
-   "level": 1,
-   "name": "Hacker",
+   "level": 0,
+   "name": "Photon 0",
+   "band": "Photon",
    "minLifetimePoints": 0
   },
   {
+   "level": 1,
+   "name": "Photon 1",
+   "band": "Photon",
+   "minLifetimePoints": 10
+  },
+  {
    "level": 2,
-   "name": "Builder",
-   "minLifetimePoints": 100
+   "name": "Photon 2",
+   "band": "Photon",
+   "minLifetimePoints": 40
   },
   {
    "level": 3,
-   "name": "Shipper",
-   "minLifetimePoints": 500
+   "name": "Photon 3",
+   "band": "Photon",
+   "minLifetimePoints": 90
   },
   {
    "level": 4,
-   "name": "Core",
-   "minLifetimePoints": 2500
+   "name": "Photon 4",
+   "band": "Photon",
+   "minLifetimePoints": 160
   },
   {
    "level": 5,
-   "name": "Legend",
-   "minLifetimePoints": 10000
+   "name": "Photon 5",
+   "band": "Photon",
+   "minLifetimePoints": 250
+  },
+  {
+   "level": 6,
+   "name": "Photon 6",
+   "band": "Photon",
+   "minLifetimePoints": 360
+  },
+  {
+   "level": 7,
+   "name": "Photon 7",
+   "band": "Photon",
+   "minLifetimePoints": 490
+  },
+  {
+   "level": 8,
+   "name": "Photon 8",
+   "band": "Photon",
+   "minLifetimePoints": 640
+  },
+  {
+   "level": 9,
+   "name": "Photon 9",
+   "band": "Photon",
+   "minLifetimePoints": 810
+  },
+  {
+   "level": 10,
+   "name": "Wave 10",
+   "band": "Wave",
+   "minLifetimePoints": 1000
+  },
+  {
+   "level": 11,
+   "name": "Wave 11",
+   "band": "Wave",
+   "minLifetimePoints": 1210
+  },
+  {
+   "level": 12,
+   "name": "Wave 12",
+   "band": "Wave",
+   "minLifetimePoints": 1440
+  },
+  {
+   "level": 13,
+   "name": "Wave 13",
+   "band": "Wave",
+   "minLifetimePoints": 1690
+  },
+  {
+   "level": 14,
+   "name": "Wave 14",
+   "band": "Wave",
+   "minLifetimePoints": 1960
+  },
+  {
+   "level": 15,
+   "name": "Wave 15",
+   "band": "Wave",
+   "minLifetimePoints": 2250
+  },
+  {
+   "level": 16,
+   "name": "Wave 16",
+   "band": "Wave",
+   "minLifetimePoints": 2560
+  },
+  {
+   "level": 17,
+   "name": "Wave 17",
+   "band": "Wave",
+   "minLifetimePoints": 2890
+  },
+  {
+   "level": 18,
+   "name": "Wave 18",
+   "band": "Wave",
+   "minLifetimePoints": 3240
+  },
+  {
+   "level": 19,
+   "name": "Wave 19",
+   "band": "Wave",
+   "minLifetimePoints": 3610
+  },
+  {
+   "level": 20,
+   "name": "Focus 20",
+   "band": "Focus",
+   "minLifetimePoints": 4000
+  },
+  {
+   "level": 21,
+   "name": "Focus 21",
+   "band": "Focus",
+   "minLifetimePoints": 4410
+  },
+  {
+   "level": 22,
+   "name": "Focus 22",
+   "band": "Focus",
+   "minLifetimePoints": 4840
+  },
+  {
+   "level": 23,
+   "name": "Focus 23",
+   "band": "Focus",
+   "minLifetimePoints": 5290
+  },
+  {
+   "level": 24,
+   "name": "Focus 24",
+   "band": "Focus",
+   "minLifetimePoints": 5760
+  },
+  {
+   "level": 25,
+   "name": "Focus 25",
+   "band": "Focus",
+   "minLifetimePoints": 6250
+  },
+  {
+   "level": 26,
+   "name": "Focus 26",
+   "band": "Focus",
+   "minLifetimePoints": 6760
+  },
+  {
+   "level": 27,
+   "name": "Focus 27",
+   "band": "Focus",
+   "minLifetimePoints": 7290
+  },
+  {
+   "level": 28,
+   "name": "Focus 28",
+   "band": "Focus",
+   "minLifetimePoints": 7840
+  },
+  {
+   "level": 29,
+   "name": "Focus 29",
+   "band": "Focus",
+   "minLifetimePoints": 8410
+  },
+  {
+   "level": 30,
+   "name": "Flare 30",
+   "band": "Flare",
+   "minLifetimePoints": 9000
+  },
+  {
+   "level": 31,
+   "name": "Flare 31",
+   "band": "Flare",
+   "minLifetimePoints": 9610
+  },
+  {
+   "level": 32,
+   "name": "Flare 32",
+   "band": "Flare",
+   "minLifetimePoints": 10240
+  },
+  {
+   "level": 33,
+   "name": "Flare 33",
+   "band": "Flare",
+   "minLifetimePoints": 10890
+  },
+  {
+   "level": 34,
+   "name": "Flare 34",
+   "band": "Flare",
+   "minLifetimePoints": 11560
+  },
+  {
+   "level": 35,
+   "name": "Flare 35",
+   "band": "Flare",
+   "minLifetimePoints": 12250
+  },
+  {
+   "level": 36,
+   "name": "Flare 36",
+   "band": "Flare",
+   "minLifetimePoints": 12960
+  },
+  {
+   "level": 37,
+   "name": "Flare 37",
+   "band": "Flare",
+   "minLifetimePoints": 13690
+  },
+  {
+   "level": 38,
+   "name": "Flare 38",
+   "band": "Flare",
+   "minLifetimePoints": 14440
+  },
+  {
+   "level": 39,
+   "name": "Flare 39",
+   "band": "Flare",
+   "minLifetimePoints": 15210
+  },
+  {
+   "level": 40,
+   "name": "Comet 40",
+   "band": "Comet",
+   "minLifetimePoints": 16000
+  },
+  {
+   "level": 41,
+   "name": "Comet 41",
+   "band": "Comet",
+   "minLifetimePoints": 16810
+  },
+  {
+   "level": 42,
+   "name": "Comet 42",
+   "band": "Comet",
+   "minLifetimePoints": 17640
+  },
+  {
+   "level": 43,
+   "name": "Comet 43",
+   "band": "Comet",
+   "minLifetimePoints": 18490
+  },
+  {
+   "level": 44,
+   "name": "Comet 44",
+   "band": "Comet",
+   "minLifetimePoints": 19360
+  },
+  {
+   "level": 45,
+   "name": "Comet 45",
+   "band": "Comet",
+   "minLifetimePoints": 20250
+  },
+  {
+   "level": 46,
+   "name": "Comet 46",
+   "band": "Comet",
+   "minLifetimePoints": 21160
+  },
+  {
+   "level": 47,
+   "name": "Comet 47",
+   "band": "Comet",
+   "minLifetimePoints": 22090
+  },
+  {
+   "level": 48,
+   "name": "Comet 48",
+   "band": "Comet",
+   "minLifetimePoints": 23040
+  },
+  {
+   "level": 49,
+   "name": "Comet 49",
+   "band": "Comet",
+   "minLifetimePoints": 24010
+  },
+  {
+   "level": 50,
+   "name": "Pulsar 50",
+   "band": "Pulsar",
+   "minLifetimePoints": 25000
+  },
+  {
+   "level": 51,
+   "name": "Pulsar 51",
+   "band": "Pulsar",
+   "minLifetimePoints": 26010
+  },
+  {
+   "level": 52,
+   "name": "Pulsar 52",
+   "band": "Pulsar",
+   "minLifetimePoints": 27040
+  },
+  {
+   "level": 53,
+   "name": "Pulsar 53",
+   "band": "Pulsar",
+   "minLifetimePoints": 28090
+  },
+  {
+   "level": 54,
+   "name": "Pulsar 54",
+   "band": "Pulsar",
+   "minLifetimePoints": 29160
+  },
+  {
+   "level": 55,
+   "name": "Pulsar 55",
+   "band": "Pulsar",
+   "minLifetimePoints": 30250
+  },
+  {
+   "level": 56,
+   "name": "Pulsar 56",
+   "band": "Pulsar",
+   "minLifetimePoints": 31360
+  },
+  {
+   "level": 57,
+   "name": "Pulsar 57",
+   "band": "Pulsar",
+   "minLifetimePoints": 32490
+  },
+  {
+   "level": 58,
+   "name": "Pulsar 58",
+   "band": "Pulsar",
+   "minLifetimePoints": 33640
+  },
+  {
+   "level": 59,
+   "name": "Pulsar 59",
+   "band": "Pulsar",
+   "minLifetimePoints": 34810
+  },
+  {
+   "level": 60,
+   "name": "Nebula 60",
+   "band": "Nebula",
+   "minLifetimePoints": 36000
+  },
+  {
+   "level": 61,
+   "name": "Nebula 61",
+   "band": "Nebula",
+   "minLifetimePoints": 37210
+  },
+  {
+   "level": 62,
+   "name": "Nebula 62",
+   "band": "Nebula",
+   "minLifetimePoints": 38440
+  },
+  {
+   "level": 63,
+   "name": "Nebula 63",
+   "band": "Nebula",
+   "minLifetimePoints": 39690
+  },
+  {
+   "level": 64,
+   "name": "Nebula 64",
+   "band": "Nebula",
+   "minLifetimePoints": 40960
+  },
+  {
+   "level": 65,
+   "name": "Nebula 65",
+   "band": "Nebula",
+   "minLifetimePoints": 42250
+  },
+  {
+   "level": 66,
+   "name": "Nebula 66",
+   "band": "Nebula",
+   "minLifetimePoints": 43560
+  },
+  {
+   "level": 67,
+   "name": "Nebula 67",
+   "band": "Nebula",
+   "minLifetimePoints": 44890
+  },
+  {
+   "level": 68,
+   "name": "Nebula 68",
+   "band": "Nebula",
+   "minLifetimePoints": 46240
+  },
+  {
+   "level": 69,
+   "name": "Nebula 69",
+   "band": "Nebula",
+   "minLifetimePoints": 47610
+  },
+  {
+   "level": 70,
+   "name": "Quasar 70",
+   "band": "Quasar",
+   "minLifetimePoints": 49000
+  },
+  {
+   "level": 71,
+   "name": "Quasar 71",
+   "band": "Quasar",
+   "minLifetimePoints": 50410
+  },
+  {
+   "level": 72,
+   "name": "Quasar 72",
+   "band": "Quasar",
+   "minLifetimePoints": 51840
+  },
+  {
+   "level": 73,
+   "name": "Quasar 73",
+   "band": "Quasar",
+   "minLifetimePoints": 53290
+  },
+  {
+   "level": 74,
+   "name": "Quasar 74",
+   "band": "Quasar",
+   "minLifetimePoints": 54760
+  },
+  {
+   "level": 75,
+   "name": "Quasar 75",
+   "band": "Quasar",
+   "minLifetimePoints": 56250
+  },
+  {
+   "level": 76,
+   "name": "Quasar 76",
+   "band": "Quasar",
+   "minLifetimePoints": 57760
+  },
+  {
+   "level": 77,
+   "name": "Quasar 77",
+   "band": "Quasar",
+   "minLifetimePoints": 59290
+  },
+  {
+   "level": 78,
+   "name": "Quasar 78",
+   "band": "Quasar",
+   "minLifetimePoints": 60840
+  },
+  {
+   "level": 79,
+   "name": "Quasar 79",
+   "band": "Quasar",
+   "minLifetimePoints": 62410
+  },
+  {
+   "level": 80,
+   "name": "Magnetar 80",
+   "band": "Magnetar",
+   "minLifetimePoints": 64000
+  },
+  {
+   "level": 81,
+   "name": "Magnetar 81",
+   "band": "Magnetar",
+   "minLifetimePoints": 65610
+  },
+  {
+   "level": 82,
+   "name": "Magnetar 82",
+   "band": "Magnetar",
+   "minLifetimePoints": 67240
+  },
+  {
+   "level": 83,
+   "name": "Magnetar 83",
+   "band": "Magnetar",
+   "minLifetimePoints": 68890
+  },
+  {
+   "level": 84,
+   "name": "Magnetar 84",
+   "band": "Magnetar",
+   "minLifetimePoints": 70560
+  },
+  {
+   "level": 85,
+   "name": "Magnetar 85",
+   "band": "Magnetar",
+   "minLifetimePoints": 72250
+  },
+  {
+   "level": 86,
+   "name": "Magnetar 86",
+   "band": "Magnetar",
+   "minLifetimePoints": 73960
+  },
+  {
+   "level": 87,
+   "name": "Magnetar 87",
+   "band": "Magnetar",
+   "minLifetimePoints": 75690
+  },
+  {
+   "level": 88,
+   "name": "Magnetar 88",
+   "band": "Magnetar",
+   "minLifetimePoints": 77440
+  },
+  {
+   "level": 89,
+   "name": "Magnetar 89",
+   "band": "Magnetar",
+   "minLifetimePoints": 79210
+  },
+  {
+   "level": 90,
+   "name": "Singularity 90",
+   "band": "Singularity",
+   "minLifetimePoints": 81000
+  },
+  {
+   "level": 91,
+   "name": "Singularity 91",
+   "band": "Singularity",
+   "minLifetimePoints": 82810
+  },
+  {
+   "level": 92,
+   "name": "Singularity 92",
+   "band": "Singularity",
+   "minLifetimePoints": 84640
+  },
+  {
+   "level": 93,
+   "name": "Singularity 93",
+   "band": "Singularity",
+   "minLifetimePoints": 86490
+  },
+  {
+   "level": 94,
+   "name": "Singularity 94",
+   "band": "Singularity",
+   "minLifetimePoints": 88360
+  },
+  {
+   "level": 95,
+   "name": "Singularity 95",
+   "band": "Singularity",
+   "minLifetimePoints": 90250
+  },
+  {
+   "level": 96,
+   "name": "Singularity 96",
+   "band": "Singularity",
+   "minLifetimePoints": 92160
+  },
+  {
+   "level": 97,
+   "name": "Singularity 97",
+   "band": "Singularity",
+   "minLifetimePoints": 94090
+  },
+  {
+   "level": 98,
+   "name": "Singularity 98",
+   "band": "Singularity",
+   "minLifetimePoints": 96040
+  },
+  {
+   "level": 99,
+   "name": "Singularity 99",
+   "band": "Singularity",
+   "minLifetimePoints": 98010
   }
  ],
  "badges": [
@@ -258,6 +833,176 @@
    "id": "five-jobs-delivered",
    "name": "Five Jobs Delivered",
    "pillar": "expert"
+  },
+  {
+   "id": "one-month",
+   "name": "One Month",
+   "pillar": "use"
+  },
+  {
+   "id": "six-months",
+   "name": "Six Months",
+   "pillar": "use",
+   "rarity": "uncommon"
+  },
+  {
+   "id": "yearling",
+   "name": "Yearling",
+   "pillar": "use",
+   "rarity": "rare"
+  },
+  {
+   "id": "two-years",
+   "name": "Two Years",
+   "pillar": "use",
+   "rarity": "epic"
+  },
+  {
+   "id": "three-years",
+   "name": "Three Years",
+   "pillar": "use",
+   "rarity": "legendary"
+  },
+  {
+   "id": "week-streak",
+   "name": "Week Streak",
+   "pillar": "use"
+  },
+  {
+   "id": "month-streak",
+   "name": "Month Streak",
+   "pillar": "use",
+   "rarity": "rare"
+  },
+  {
+   "id": "hundred-days",
+   "name": "Hundred Days",
+   "pillar": "use",
+   "rarity": "epic"
+  },
+  {
+   "id": "founding-developer",
+   "name": "Founding Developer",
+   "pillar": "community",
+   "rarity": "legendary"
+  },
+  {
+   "id": "spark",
+   "name": "Spark",
+   "pillar": "share"
+  },
+  {
+   "id": "signal",
+   "name": "Signal",
+   "pillar": "share"
+  },
+  {
+   "id": "beacon",
+   "name": "Beacon",
+   "pillar": "share",
+   "rarity": "uncommon"
+  },
+  {
+   "id": "current",
+   "name": "Current",
+   "pillar": "share",
+   "rarity": "uncommon"
+  },
+  {
+   "id": "catalyst",
+   "name": "Catalyst",
+   "pillar": "share",
+   "rarity": "rare"
+  },
+  {
+   "id": "amplifier",
+   "name": "Amplifier",
+   "pillar": "share",
+   "rarity": "rare"
+  },
+  {
+   "id": "orbit",
+   "name": "Orbit",
+   "pillar": "share",
+   "rarity": "epic"
+  },
+  {
+   "id": "constellation",
+   "name": "Constellation",
+   "pillar": "share",
+   "rarity": "epic"
+  },
+  {
+   "id": "nova",
+   "name": "Nova",
+   "pillar": "share",
+   "rarity": "epic"
+  },
+  {
+   "id": "supernova",
+   "name": "Supernova",
+   "pillar": "share",
+   "rarity": "legendary"
+  },
+  {
+   "id": "cosmos-i",
+   "name": "Cosmos I",
+   "pillar": "share",
+   "rarity": "legendary"
+  },
+  {
+   "id": "cosmos-ii",
+   "name": "Cosmos II",
+   "pillar": "share",
+   "rarity": "legendary"
+  },
+  {
+   "id": "cosmos-iii",
+   "name": "Cosmos III",
+   "pillar": "share",
+   "rarity": "legendary"
+  },
+  {
+   "id": "cosmos-iv",
+   "name": "Cosmos IV",
+   "pillar": "share",
+   "rarity": "legendary"
+  },
+  {
+   "id": "cosmos-v",
+   "name": "Cosmos V",
+   "pillar": "share",
+   "rarity": "legendary"
+  },
+  {
+   "id": "cosmos-vi",
+   "name": "Cosmos VI",
+   "pillar": "share",
+   "rarity": "legendary"
+  },
+  {
+   "id": "cosmos-vii",
+   "name": "Cosmos VII",
+   "pillar": "share",
+   "rarity": "legendary"
+  },
+  {
+   "id": "cosmos-viii",
+   "name": "Cosmos VIII",
+   "pillar": "share",
+   "rarity": "legendary"
+  },
+  {
+   "id": "cosmos-ix",
+   "name": "Cosmos IX",
+   "pillar": "share",
+   "rarity": "legendary"
+  },
+  {
+   "id": "cosmos-x",
+   "name": "Cosmos X",
+   "pillar": "share",
+   "rarity": "legendary"
   }
  ],
  "templates": [],
@@ -3051,6 +3796,833 @@
    ],
    "limits": {
     "once": "subject"
+   }
+  },
+  {
+   "id": "tenure-1",
+   "name": "1 month",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "tenure.reached"
+   },
+   "if": [
+    {
+     "field": "months",
+     "op": "eq",
+     "value": 1
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "one-month"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "months"
+   }
+  },
+  {
+   "id": "tenure-6",
+   "name": "6 months",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "tenure.reached"
+   },
+   "if": [
+    {
+     "field": "months",
+     "op": "eq",
+     "value": 6
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "six-months"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "months"
+   }
+  },
+  {
+   "id": "tenure-12",
+   "name": "12 months",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "tenure.reached"
+   },
+   "if": [
+    {
+     "field": "months",
+     "op": "eq",
+     "value": 12
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "yearling"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "months"
+   }
+  },
+  {
+   "id": "tenure-24",
+   "name": "24 months",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "tenure.reached"
+   },
+   "if": [
+    {
+     "field": "months",
+     "op": "eq",
+     "value": 24
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "two-years"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "months"
+   }
+  },
+  {
+   "id": "tenure-36",
+   "name": "36 months",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "tenure.reached"
+   },
+   "if": [
+    {
+     "field": "months",
+     "op": "eq",
+     "value": 36
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "three-years"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "months"
+   }
+  },
+  {
+   "id": "streak-7",
+   "name": "7-day streak",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "streak.reached"
+   },
+   "if": [
+    {
+     "field": "days",
+     "op": "eq",
+     "value": 7
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "week-streak"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "days"
+   }
+  },
+  {
+   "id": "streak-30",
+   "name": "30-day streak",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "streak.reached"
+   },
+   "if": [
+    {
+     "field": "days",
+     "op": "eq",
+     "value": 30
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "month-streak"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "days"
+   }
+  },
+  {
+   "id": "streak-100",
+   "name": "100-day streak",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "streak.reached"
+   },
+   "if": [
+    {
+     "field": "days",
+     "op": "eq",
+     "value": 100
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "hundred-days"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "days"
+   }
+  },
+  {
+   "id": "founding-developer",
+   "name": "Founding Developer",
+   "pillar": "community",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "founder.eligible"
+   },
+   "if": [],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "founding-developer"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "referral-network",
+   "name": "Friend of a friend",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.network"
+   },
+   "if": [],
+   "then": [
+    {
+     "type": "points",
+     "points": 1
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "referee"
+   }
+  },
+  {
+   "id": "referral-milestone-5",
+   "name": "5 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 5
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "spark"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-10",
+   "name": "10 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 10
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "signal"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-15",
+   "name": "15 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 15
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "beacon"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-20",
+   "name": "20 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 20
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "current"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-25",
+   "name": "25 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 25
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "catalyst"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-30",
+   "name": "30 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 30
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "amplifier"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-35",
+   "name": "35 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 35
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "orbit"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-40",
+   "name": "40 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 40
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "constellation"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-45",
+   "name": "45 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 45
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "nova"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-50",
+   "name": "50 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 50
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "supernova"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-100",
+   "name": "100 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 100
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "cosmos-i"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-150",
+   "name": "150 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 150
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "cosmos-ii"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-200",
+   "name": "200 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 200
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "cosmos-iii"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-250",
+   "name": "250 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 250
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "cosmos-iv"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-300",
+   "name": "300 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 300
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "cosmos-v"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-350",
+   "name": "350 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 350
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "cosmos-vi"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-400",
+   "name": "400 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 400
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "cosmos-vii"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-450",
+   "name": "450 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 450
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "cosmos-viii"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-500",
+   "name": "500 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 500
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "cosmos-ix"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
+   }
+  },
+  {
+   "id": "referral-milestone-550",
+   "name": "550 referrals",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.milestone"
+   },
+   "if": [
+    {
+     "field": "count",
+     "op": "eq",
+     "value": 550
+    }
+   ],
+   "then": [
+    {
+     "type": "badge",
+     "badge": "cosmos-x"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "count"
    }
   }
  ]

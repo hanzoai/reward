@@ -11,9 +11,9 @@ import (
 )
 
 // seedJSON is the program a fresh store starts with: the owner-approved earn
-// table, levels and caps as active rules, and the bounty, product, model and
-// expert rules as inactive ones at 0 points, for staff to price in admin. Every
-// rule is manual.
+// table, levels and caps as active rules, the owner's later tenure, streak, founder
+// and referral rules, and the bounty, product, model and expert rules as inactive
+// ones at 0 points, for staff to price in admin. Every rule is manual.
 //
 //go:embed seed/rewards.json
 var seedJSON []byte
@@ -40,6 +40,7 @@ func (e *Engine) Seed(ctx context.Context) (bool, error) {
 	}
 	p := orm.New[rule.Program](e.DB)
 	p.SetId(rule.ProgramID(in.ID))
+	// FoundingCutoff is not seeded: the owner sets the date in admin.
 	p.Name, p.Active, p.Budget, p.Upline = in.Name, in.Active, in.Budget, in.Upline
 	p.Levels, p.Badges, p.Templates, p.Version = in.Levels, in.Badges, in.Templates, 1
 	for _, r := range in.Rules {

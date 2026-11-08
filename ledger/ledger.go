@@ -123,6 +123,8 @@ type Account struct {
 	// Redeemable is the part of Lifetime the awards marked credit-eligible.
 	Redeemable int64      `json:"redeemable"`
 	Level      rule.Level `json:"level"`
+	// Band is the name of the run of levels Level belongs to.
+	Band string `json:"band"`
 	// Next is the level above, with the points it needs; nil at the top.
 	Next   *rule.Level `json:"next,omitempty"`
 	Badges []Held      `json:"badges"`
@@ -175,6 +177,7 @@ func Standing(ctx context.Context, db orm.DB, p *rule.Program, subject string) (
 		}
 	}
 	a.Level, a.Next = p.LevelOf(a.Lifetime)
+	a.Band = a.Level.Band
 	for _, b := range p.Badges {
 		if held[b.ID] > 0 {
 			r := b.Rarity

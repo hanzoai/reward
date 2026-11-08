@@ -65,6 +65,7 @@ func TestProfileIsPrivateByDefaultAndPublicOnlyWhenTheOwnerSaysSo(t *testing.T) 
 		Handle    string `json:"handle"`
 		Level     int    `json:"level"`
 		LevelName string `json:"levelName"`
+		Band      string `json:"band"`
 		Points    int64  `json:"points"`
 		Badges    []struct {
 			ID, Name, Pillar, Rarity, EarnedAt string
@@ -73,7 +74,7 @@ func TestProfileIsPrivateByDefaultAndPublicOnlyWhenTheOwnerSaysSo(t *testing.T) 
 		Links   map[string]string `json:"links"`
 	}
 	r.json(nobody, "GET", pub+"/profile/ALICE", nil, 200, &view)
-	if view.Handle != "alice" || view.Points != 121 || view.Level != 2 || view.LevelName != "Builder" {
+	if view.Handle != "alice" || view.Points != 121 || view.Level != 3 || view.LevelName != "Photon 3" || view.Band != "Photon" {
 		t.Errorf("view = %+v", view)
 	}
 	if len(view.Badges) != 1 || view.Badges[0].ID != "stargazer" || view.Badges[0].Rarity != "common" || view.Badges[0].EarnedAt == "" {
@@ -147,6 +148,15 @@ func TestExploreIsTheCallersOwnListByPillar(t *testing.T) {
 			t.Errorf("github-badge = %+v", x)
 		}
 	}
+	// the tenure, streak, founder and referral rules are on, so they are offered, each under its pillar.
+	if !has(0, "tenure-6") || !has(0, "streak-30") || !has(1, "referral-network") || !has(1, "referral-milestone-550") || !has(2, "founding-developer") {
+		t.Errorf("use = %+v, share = %+v, community = %+v", doc.Pillars[0].Rules, doc.Pillars[1].Rules, doc.Pillars[2].Rules)
+	}
+	for _, x := range doc.Pillars[1].Rules {
+		if x.Rule == "referral-milestone-550" && (x.Points != 0 || len(x.Badges) != 1 || x.Badges[0].ID != "cosmos-x" || x.Event.Name != "referral.milestone") {
+			t.Errorf("referral-milestone-550 = %+v", x)
+		}
+	}
 	r.json(bob, "GET", pub+"/me/explore", nil, 200, &doc)
 	if !has(2, "github-star") {
 		t.Error("bob did not star anything and is not offered the star rule")
@@ -176,7 +186,7 @@ func TestTheBadgeSVGIsPublicOnlyWithTheProfileAndRefetchedByCamo(t *testing.T) {
 	if tag == "" || !strings.HasPrefix(tag, `"`) {
 		t.Errorf("ETag = %q", tag)
 	}
-	if !strings.Contains(string(svg), "Builder") || !strings.Contains(string(svg), "121 pts") {
+	if !strings.Contains(string(svg), "Photon 3") || !strings.Contains(string(svg), "121 pts") {
 		t.Errorf("svg = %s", svg)
 	}
 
@@ -217,7 +227,7 @@ func TestTheBadgeSVGEscapesWhatAnAdminTyped(t *testing.T) {
 		t.Fatal(err)
 	}
 	levels := append([]rule.Level(nil), prog.Levels...)
-	levels[1].Name = `Build<script>alert("x")</script>&`
+	levels[3].Name = `Build<script>alert("x")</script>&`
 	var in rule.Program
 	in.Name, in.Active, in.Budget, in.Levels, in.Badges, in.Templates = prog.Name, prog.Active, prog.Budget, levels, prog.Badges, prog.Templates
 	if _, err := r.e.SaveProgram(t0(), "hanzo-rewards", in, "z"); err != nil {
@@ -287,7 +297,7 @@ func TestTheBadgeSVGSaysTheFieldsAskedInTheOrderGiven(t *testing.T) {
 
 	// the default, and a label of one's own.
 	svg := r.svg("alice.svg")
-	if !strings.Contains(svg, ">Hanzo</text>") || !strings.Contains(svg, "Builder · 121 pts") || strings.Contains(svg, "Stargazer") {
+	if !strings.Contains(svg, ">Hanzo</text>") || !strings.Contains(svg, "Photon 3 · 121 pts") || strings.Contains(svg, "Stargazer") {
 		t.Errorf("default = %s", svg)
 	}
 	if svg := r.svg("alice.svg?label=Zoo"); !strings.Contains(svg, ">Zoo</text>") || strings.Contains(svg, "Hanzo") {
@@ -296,7 +306,7 @@ func TestTheBadgeSVGSaysTheFieldsAskedInTheOrderGiven(t *testing.T) {
 	if svg := r.svg("alice.svg?label=%3Cb%3E%26%22x"); !strings.Contains(svg, "&lt;b&gt;&amp;&#34;x") || strings.Contains(svg, "<b>") {
 		t.Errorf("label markup = %s", svg)
 	}
-	if svg := r.svg("alice.svg?fields=points,level"); strings.Index(svg, "121 pts") > strings.Index(svg, "Builder") || !strings.Contains(svg, "121 pts · Builder") {
+	if svg := r.svg("alice.svg?fields=points,level"); strings.Index(svg, "121 pts") > strings.Index(svg, "Photon 3") || !strings.Contains(svg, "121 pts · Photon 3") {
 		t.Errorf("order = %s", svg)
 	}
 	if svg := r.svg("alice.svg?fields=level"); strings.Contains(svg, "pts") {
@@ -305,7 +315,7 @@ func TestTheBadgeSVGSaysTheFieldsAskedInTheOrderGiven(t *testing.T) {
 
 	// no token milestone yet: the field is left out, and nothing is drawn empty.
 	svg = r.svg("alice.svg?fields=level,tokens")
-	if !strings.Contains(svg, "Builder</text>") || strings.Contains(svg, "·") {
+	if !strings.Contains(svg, "Photon 3</text>") || strings.Contains(svg, "·") {
 		t.Errorf("no tier = %s", svg)
 	}
 	svg = r.svg("alice.svg?fields=tokens")
@@ -326,7 +336,7 @@ func TestTheBadgeSVGSaysTheFieldsAskedInTheOrderGiven(t *testing.T) {
 	clock = clock.Add(time.Hour)
 	r.award("tok-10b", "usage.tokens", map[string]any{"tokens": 10_000_000_000, "model": "zen4"})
 	svg = r.svg("alice.svg?fields=level,points,tokens")
-	if !strings.Contains(svg, "Shipper · ") || !strings.Contains(svg, " pts · Titan") {
+	if !strings.Contains(svg, "Photon 7 · ") || !strings.Contains(svg, " pts · Titan") {
 		t.Errorf("highest tier = %s", svg)
 	}
 	for _, count := range []string{"5000000", "10000000000", "5M", "10B"} {
@@ -354,19 +364,19 @@ func TestTheBadgeSVGSaysTheFieldsAskedInTheOrderGiven(t *testing.T) {
 		t.Errorf("only the top three are drawn: %s", svg)
 	}
 	// the top three as one line, after the other fields.
-	if svg := r.svg("alice.svg?fields=level,badges"); !strings.Contains(svg, "Shipper · First 100K, Titan, Stargazer") {
+	if svg := r.svg("alice.svg?fields=level,badges"); !strings.Contains(svg, "Photon 7 · First 100K, Titan, Stargazer") {
 		t.Errorf("flat badges = %s", svg)
 	}
 
 	// everyone's picture is their own: bob holds nothing and his badges are left out.
 	r.json(bob, "PUT", pub+"/me/profile", map[string]any{"handle": "bob", "public": true}, 200, nil)
-	if svg := r.svg("bob.svg?fields=level,tokens,badges&style=card"); strings.Contains(svg, "<circle") || strings.Contains(svg, "no badges") || !strings.Contains(svg, "Hacker") {
+	if svg := r.svg("bob.svg?fields=level,tokens,badges&style=card"); strings.Contains(svg, "<circle") || strings.Contains(svg, "no badges") || !strings.Contains(svg, "Photon 0") {
 		t.Errorf("bob = %s", svg)
 	}
 	// and the card draws the four fields in the order given: the fields before the
 	// badges are on the line under the handle.
 	svg = r.svg("alice.svg?fields=badges,tokens,points,level&style=card")
-	if !strings.Contains(svg, "Titan · ") || !strings.Contains(svg, " pts · Shipper<") {
+	if !strings.Contains(svg, "Titan · ") || !strings.Contains(svg, " pts · Photon 7<") {
 		t.Errorf("card = %s", svg)
 	}
 }
@@ -492,5 +502,83 @@ func TestTheBadgeSVGRevalidatesPerOptionAndItsTagFollowsThePicture(t *testing.T)
 	code, _, after := r.do(who{"If-None-Match": before.Get("ETag")}, "GET", pub+"/badge/alice.svg?fields=tokens&label=Zoo", nil)
 	if code != 200 || after.Get("ETag") == before.Get("ETag") {
 		t.Errorf("after a new tier: %d %s %s", code, before.Get("ETag"), after.Get("ETag"))
+	}
+}
+
+func TestMeAndThePublicProfileCarryTheBandOfTheLevel(t *testing.T) {
+	r := newRig(t)
+	r.seeded()
+	r.json(alice, "PUT", pub+"/me/profile", map[string]any{"handle": "alice", "public": true}, 200, nil)
+	type level struct {
+		Level int    `json:"level"`
+		Name  string `json:"name"`
+		Band  string `json:"band"`
+	}
+	var me struct {
+		Programs []struct {
+			Lifetime int64  `json:"lifetime"`
+			Level    level  `json:"level"`
+			Next     *level `json:"next"`
+			Band     string `json:"band"`
+		} `json:"programs"`
+	}
+	var view struct {
+		Level     int    `json:"level"`
+		LevelName string `json:"levelName"`
+		Band      string `json:"band"`
+		Points    int64  `json:"points"`
+	}
+	check := func(points int64, n int, name, band, next string) {
+		t.Helper()
+		r.json(alice, "GET", pub+"/me", nil, 200, &me)
+		p := me.Programs[0]
+		if p.Lifetime != points || p.Level != (level{n, name, band}) || p.Band != band || p.Next == nil || p.Next.Name != next {
+			t.Errorf("/me at %d points = %+v (next %+v)", points, p, p.Next)
+		}
+		r.json(nobody, "GET", pub+"/profile/alice", nil, 200, &view)
+		if view.Points != points || view.Level != n || view.LevelName != name || view.Band != band {
+			t.Errorf("the profile at %d points = %+v", points, view)
+		}
+		// the badge draws the level's name and nothing of the band beside it.
+		if svg := r.svg("alice.svg"); !strings.Contains(svg, name+" · ") {
+			t.Errorf("the badge at %d points = %s", points, svg)
+		}
+	}
+	check(0, 0, "Photon 0", "Photon", "Photon 1")
+	back := func(source string, points int) {
+		t.Helper()
+		r.json(staff, "POST", admin+"/programs/hanzo-rewards/backfill", map[string]any{"rows": []map[string]any{{"subject": "alice", "source": source, "points": points, "evidence": "x"}}}, 200, nil)
+	}
+	back("usage.tokens", 999)
+	check(999, 9, "Photon 9", "Photon", "Wave 10")
+	back("github.star", 1)
+	check(1000, 10, "Wave 10", "Wave", "Wave 11")
+	back("github.fork", 24_000)
+	check(25_000, 50, "Pulsar 50", "Pulsar", "Pulsar 51")
+}
+
+func TestAProgramWithItsOwnLevelsHasNoBandUntilItNamesOne(t *testing.T) {
+	r := newRig(t)
+	r.json(staff, "POST", admin+"/programs", map[string]any{"id": "mini", "name": "Mini", "active": true,
+		"levels": []map[string]any{{"level": 1, "name": "Hacker", "minLifetimePoints": 0}, {"level": 2, "name": "Builder 2", "band": "Builder", "minLifetimePoints": 100}}}, 201, nil)
+	var me struct {
+		Programs []struct {
+			Level struct {
+				Level int    `json:"level"`
+				Name  string `json:"name"`
+				Band  string `json:"band"`
+			} `json:"level"`
+			Band string `json:"band"`
+		} `json:"programs"`
+	}
+	r.json(alice, "GET", pub+"/me", nil, 200, &me)
+	if p := me.Programs[0]; p.Level.Level != 1 || p.Level.Name != "Hacker" || p.Band != "Hacker" || p.Level.Band != "Hacker" {
+		t.Errorf("me = %+v", p)
+	}
+	// the admin table is as it was typed: an empty band stays empty there.
+	var prog rule.View
+	r.json(staff, "GET", admin+"/programs/mini", nil, 200, &prog)
+	if prog.Levels[0].Band != "" || prog.Levels[1].Band != "Builder" {
+		t.Errorf("levels = %+v", prog.Levels)
 	}
 }

@@ -30,9 +30,10 @@ func TestCatalogListsEveryEventUnderAPillar(t *testing.T) {
 		t.Errorf("grouped %d events of %d", n, len(events))
 	}
 	want := map[string]Pillar{
-		"usage.tokens": Use, "product.used": Use, "model.used": Use,
+		"usage.tokens": Use, "product.used": Use, "model.used": Use, "tenure.reached": Use, "streak.reached": Use,
 		"referral.activated": Share, "referral.retained": Share, "referral.linked": Share, "referral.welcomed": Share, "social.post.verified": Share,
-		"discord.joined": Community, "github.star": Community, "github.follow": Community,
+		"referral.network": Share, "referral.milestone": Share,
+		"discord.joined": Community, "github.star": Community, "github.follow": Community, "founder.eligible": Community,
 		"github.fork": Contribute, "github.badge": Contribute,
 		"github.issue.accepted": Contribute, "github.pr.merged": Contribute, "submission.video": Contribute,
 		"submission.test": Contribute, "benchmark.added": Contribute, "bounty.completed": Contribute, "deploy.button": Contribute,
@@ -108,5 +109,49 @@ func TestAnEventMustBeExactlyWhatTheCatalogLists(t *testing.T) {
 	var bad error = refuse.New("x")
 	if !errors.Is(bad, bad) || !refuse.Is(bad) {
 		t.Error("refuse.Is")
+	}
+}
+
+func TestTheTenureStreakFounderAndReferralReachEventsAreTyped(t *testing.T) {
+	want := []struct {
+		name, title string
+		pillar      Pillar
+		field       Field
+	}{
+		{"tenure.reached", "Tenure reached", Use, whole("months")},
+		{"streak.reached", "Streak reached", Use, whole("days")},
+		{"founder.eligible", "Founding Developer eligible", Community, choice("reason", "beta", "alpha", "early")},
+		{"referral.network", "Friend of a friend", Share, text("referee")},
+		{"referral.milestone", "Referral milestone", Share, whole("count")},
+	}
+	for _, w := range want {
+		e, ok := Type(w.name)
+		if !ok {
+			t.Errorf("%s is not in the catalog", w.name)
+			continue
+		}
+		if e.Title != w.title || e.Pillar != w.pillar || e.About == "" || e.Evidence {
+			t.Errorf("%s = %+v, want title %q, pillar %s, an about, and no evidence", w.name, e, w.title, w.pillar)
+		}
+		if len(e.Fields) != 1 || e.Fields[0].Name != w.field.Name || e.Fields[0].Kind != w.field.Kind || !slices.Equal(e.Fields[0].Values, w.field.Values) {
+			t.Errorf("%s fields = %+v, want %+v", w.name, e.Fields, w.field)
+		}
+		// no evidence is asked for, and none is needed to be taken.
+		fields := map[string]any{w.field.Name: map[Kind]any{Whole: 3, Text: "acme", Choice: "beta"}[w.field.Kind]}
+		ev := Event{ID: "e", Type: w.name, Subject: "u", Fields: fields}
+		if err := ev.Validate(); err != nil {
+			t.Errorf("%s: a good event was refused: %v", w.name, err)
+		}
+	}
+	for name, ev := range map[string]Event{
+		"a fraction of a month": {ID: "e", Type: "tenure.reached", Subject: "u", Fields: map[string]any{"months": 1.5}},
+		"days as text":          {ID: "e", Type: "streak.reached", Subject: "u", Fields: map[string]any{"days": "7"}},
+		"a reason not offered":  {ID: "e", Type: "founder.eligible", Subject: "u", Fields: map[string]any{"reason": "gamma"}},
+		"no referee":            {ID: "e", Type: "referral.network", Subject: "u", Fields: map[string]any{}},
+		"an extra field":        {ID: "e", Type: "referral.milestone", Subject: "u", Fields: map[string]any{"count": 5, "org": "acme"}},
+	} {
+		if err := ev.Validate(); !refuse.Is(err) {
+			t.Errorf("%s: err = %v, want a refusal", name, err)
+		}
 	}
 }
