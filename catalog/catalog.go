@@ -87,6 +87,9 @@ type EventType struct {
 	Title  string  `json:"title"`
 	About  string  `json:"about"`
 	Fields []Field `json:"fields"`
+	// Evidence is true for an event that takes place on someone else's site: the
+	// host must state where, and what its checks found, with every one.
+	Evidence bool `json:"evidence,omitempty"`
 }
 
 func text(n string) Field                { return Field{Name: n, Kind: Text} }
@@ -113,33 +116,33 @@ var events = []EventType{
 	{Name: "referral.retained", Pillar: Share, Title: "Referral retained",
 		About: "A person a subject referred came back at least seven days after they activated."},
 	{Name: "social.post.verified", Pillar: Share, Title: "Post verified",
-		About:  "A subject's public post carrying their link was fetched and found still up a week later.",
-		Fields: []Field{text("network"), text("url"), text("product"), text("model")}},
+		About:  "A subject's public post carrying their link was fetched and found still up a week later. week is the ISO year-week of the post's publication, such as 2026-W46, so a later week's post can earn again.",
+		Fields: []Field{text("network"), text("url"), text("product"), text("model"), text("week")}, Evidence: true},
 
 	{Name: "discord.joined", Pillar: Community, Title: "Discord joined",
 		About: "A subject's Discord account joined and was linked to their account."},
 	{Name: "github.star", Pillar: Community, Title: "Repository starred",
 		About:  "A subject starred a repository, checked on GitHub against their linked account.",
-		Fields: []Field{text("repo")}},
+		Fields: []Field{text("repo")}, Evidence: true},
 	{Name: "github.follow", Pillar: Community, Title: "Followed on GitHub",
 		About:  "A subject followed an account on GitHub. target is that account.",
-		Fields: []Field{text("target")}},
+		Fields: []Field{text("target")}, Evidence: true},
 
 	{Name: "github.fork", Pillar: Contribute, Title: "Repository forked",
 		About:  "A subject forked a repository of ours. forker is the GitHub account that forked it.",
-		Fields: []Field{text("repo"), text("forker")}},
+		Fields: []Field{text("repo"), text("forker")}, Evidence: true},
 	{Name: "github.badge", Pillar: Contribute, Title: "Hanzo badge in a README",
 		About:  "A subject's public project links Hanzo from its README. Emitted once a verifier has confirmed the repository is public, its owner is the subject's linked GitHub identity, and its README carries the badge. badge is which one: built (a hanzo.ai badge) or deploy (a Deploy to Hanzo button).",
-		Fields: []Field{text("repo"), text("owner"), choice("badge", "built", "deploy")}},
+		Fields: []Field{text("repo"), text("owner"), choice("badge", "built", "deploy")}, Evidence: true},
 	{Name: "github.issue.accepted", Pillar: Contribute, Title: "Issue accepted",
 		About:  "A maintainer accepted an issue a subject opened.",
-		Fields: []Field{text("repo"), texts("labels")}},
+		Fields: []Field{text("repo"), texts("labels")}, Evidence: true},
 	{Name: "github.pr.merged", Pillar: Contribute, Title: "Pull request merged",
 		About:  "A maintainer merged a subject's pull request into a public repository.",
-		Fields: []Field{text("repo"), texts("labels"), choice("kind", "fix", "feature", "docs", "tests", "translation")}},
+		Fields: []Field{text("repo"), texts("labels"), choice("kind", "fix", "feature", "docs", "tests", "translation")}, Evidence: true},
 	{Name: "submission.video", Pillar: Contribute, Title: "Demo video submitted",
 		About:  "A subject's demo video of an app was accepted.",
-		Fields: []Field{choice("app", "cli", "desktop", "mobile"), text("url")}},
+		Fields: []Field{choice("app", "cli", "desktop", "mobile"), text("url")}, Evidence: true},
 	{Name: "submission.test", Pillar: Contribute, Title: "Test report submitted",
 		About:  "A subject's test report on a product was accepted. beta is whether the product is in beta.",
 		Fields: []Field{text("product"), flag("beta")}},
@@ -148,10 +151,10 @@ var events = []EventType{
 		Fields: []Field{text("suite"), text("pr")}},
 	{Name: "bounty.completed", Pillar: Contribute, Title: "Bounty completed",
 		About:  "A subject completed a bounty on an issue, of a tier.",
-		Fields: []Field{text("repo"), text("issue"), choice("tier", "starter", "standard", "advanced")}},
+		Fields: []Field{text("repo"), text("issue"), choice("tier", "starter", "standard", "advanced")}, Evidence: true},
 	{Name: "deploy.button", Pillar: Contribute, Title: "Deploy button added",
 		About:  "A subject's repository added a Deploy on Hanzo button.",
-		Fields: []Field{text("repo"), text("author")}},
+		Fields: []Field{text("repo"), text("author")}, Evidence: true},
 
 	{Name: "expert.listed", Pillar: Expert, Title: "Expert listed",
 		About:  "A subject listed themselves as an expert on hanzo.market.",

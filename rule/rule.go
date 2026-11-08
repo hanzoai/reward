@@ -124,12 +124,24 @@ var onces = []Once{Unlimited, Subject, Keyed}
 // pending, approved or awarded; one rejected or reversed does not.
 type Limits struct {
 	Once Once `json:"once,omitempty"`
-	// KeyField is the event field Keyed reads.
+	// KeyField is the event field Keyed reads. Several fields joined by + make one
+	// key of their values together, such as network+week.
 	KeyField string `json:"keyField,omitempty"`
 	// PerDay and PerMonth are the most claims of the rule one subject may have
 	// in one UTC day and in one UTC calendar month. 0 is no bound.
 	PerDay   int `json:"perDay,omitempty"`
 	PerMonth int `json:"perMonth,omitempty"`
+}
+
+// Slot is the key a Keyed claim is held to once for: the value of KeyField in an
+// event's fields, or the values of the fields it names joined by +.
+func (l Limits) Slot(fields map[string]any) string {
+	names := strings.Split(l.KeyField, "+")
+	vals := make([]string, len(names))
+	for i, n := range names {
+		vals[i] = fmt.Sprint(fields[n])
+	}
+	return strings.Join(vals, "+")
 }
 
 // When names the one event type a rule reads.
@@ -220,8 +232,10 @@ func (r *Rule) Validate(p *Program) error {
 	switch r.Limits.Once {
 	case Unlimited, Subject:
 	case Keyed:
-		if _, ok := ev.Field(r.Limits.KeyField); !ok {
-			return refuse.New("rule %s: once subject+key needs keyField to name a field of %s", r.ID, ev.Name)
+		for _, name := range strings.Split(r.Limits.KeyField, "+") {
+			if _, ok := ev.Field(name); !ok {
+				return refuse.New("rule %s: once subject+key needs keyField to name fields of %s", r.ID, ev.Name)
+			}
 		}
 	default:
 		return refuse.New("rule %s: once must be empty, subject or subject+key", r.ID)

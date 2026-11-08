@@ -123,7 +123,7 @@ func TestAnApprovedCreditRuleGrantsOnceThroughCommerce(t *testing.T) {
 	if _, err := e.SaveProgram(ctx, "p", prog, "z"); err != nil {
 		t.Fatal(err)
 	}
-	out, err := e.Evaluate(ctx, catalog.Event{ID: "e1", Type: "github.star", Subject: "alice", Org: "acme", Fields: map[string]any{"repo": "r"}})
+	out, err := e.Evaluate(ctx, catalog.Event{ID: "e1", Type: "github.star", Subject: "alice", Org: "acme", Fields: map[string]any{"repo": "r"}, Evidence: &catalog.Evidence{Source: "github", URL: "https://github.com/hanzoai/x", NeedsReview: true}})
 	if err != nil || len(out.Decisions) != 1 {
 		t.Fatalf("evaluate: %v %+v", err, out)
 	}

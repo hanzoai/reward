@@ -130,7 +130,7 @@ func badge(id string) rule.Action { return rule.Action{Type: rule.Do.Badge, Badg
 func cash(cents int64) rule.Action { return rule.Action{Type: rule.Do.Credit, Cents: cents} }
 
 func (r *rig) starEvent(id, subject, repo string) catalog.Event {
-	return catalog.Event{ID: id, Type: "github.star", Subject: subject, Fields: map[string]any{"repo": repo}}
+	return catalog.Event{ID: id, Type: "github.star", Subject: subject, Fields: map[string]any{"repo": repo}, Evidence: &catalog.Evidence{Source: "github", URL: "https://github.com/hanzoai/x", NeedsReview: true}}
 }
 
 func (r *rig) eval(ev catalog.Event) Outcome {

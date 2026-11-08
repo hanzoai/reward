@@ -198,7 +198,7 @@ func TestIngestRefusesCallersWithoutThePlatformPrincipalAndFeedsClaimsToThePlatf
 	r := newRig(t)
 	r.seeded()
 	ev := map[string]any{"id": "gh-1", "type": "github.pr.merged", "subject": "alice",
-		"fields": map[string]any{"repo": "hanzoai/commerce", "labels": []string{"bug"}, "kind": "fix"}}
+		"fields": map[string]any{"repo": "hanzoai/commerce", "labels": []string{"bug"}, "kind": "fix"}, "evidence": map[string]any{"source": "github", "url": "https://github.com/hanzoai/x", "needs_review": true}}
 	for name, w := range map[string]who{"anonymous": nobody, "user": alice, "org admin": orgAdmin} {
 		if code, _, _ := r.do(w, "POST", pub+"/events", ev); code != 401 && code != 403 {
 			t.Errorf("%s ingested: %d", name, code)
@@ -237,7 +237,7 @@ func TestTheStaffQueueFromIngestToAwardAndBack(t *testing.T) {
 	r := newRig(t)
 	r.seeded()
 	r.json(staff, "POST", pub+"/events", map[string]any{"id": "gh-1", "type": "github.pr.merged", "subject": "alice",
-		"fields": map[string]any{"repo": "hanzoai/commerce", "labels": []string{}, "kind": "fix"}}, 200, nil)
+		"fields": map[string]any{"repo": "hanzoai/commerce", "labels": []string{}, "kind": "fix"}, "evidence": map[string]any{"source": "github", "url": "https://github.com/hanzoai/x", "needs_review": true}}, 200, nil)
 
 	var q struct {
 		Claims []struct {
@@ -298,7 +298,7 @@ func TestMeIsTheCallersOwnRecordsOnly(t *testing.T) {
 	r := newRig(t)
 	r.seeded()
 	for _, who := range []string{"alice", "bob"} {
-		r.json(staff, "POST", pub+"/events", map[string]any{"id": "star-" + who, "type": "github.star", "subject": who, "fields": map[string]any{"repo": "hanzoai/" + who}}, 200, nil)
+		r.json(staff, "POST", pub+"/events", map[string]any{"id": "star-" + who, "type": "github.star", "subject": who, "fields": map[string]any{"repo": "hanzoai/" + who}, "evidence": map[string]any{"source": "github", "url": "https://github.com/hanzoai/x", "needs_review": true}}, 200, nil)
 	}
 	var mine struct {
 		Claims []struct {
@@ -374,7 +374,7 @@ func TestProgramsAndRulesAreEditedOverHTTP(t *testing.T) {
 	var sim engine.Outcome
 	star["id"] = "star"
 	r.json(staff, "POST", admin+"/simulate", map[string]any{"program": "mini", "rule": star,
-		"event": map[string]any{"id": "s1", "type": "github.star", "subject": "alice", "fields": map[string]any{"repo": "a"}}}, 200, &sim)
+		"event": map[string]any{"id": "s1", "type": "github.star", "subject": "alice", "fields": map[string]any{"repo": "a"}, "evidence": map[string]any{"source": "github", "url": "https://github.com/hanzoai/x", "needs_review": true}}}, 200, &sim)
 	if !sim.Dry || sim.Decisions[0].Result != "claimed" || sim.Decisions[0].Claim.Points != 4 {
 		t.Errorf("simulation = %+v", sim)
 	}
@@ -387,7 +387,7 @@ func TestProgramsAndRulesAreEditedOverHTTP(t *testing.T) {
 	}
 
 	// a claimed rule cannot be deleted; an unclaimed one can.
-	r.json(staff, "POST", pub+"/events", map[string]any{"id": "s1", "type": "github.star", "subject": "alice", "fields": map[string]any{"repo": "a"}}, 200, nil)
+	r.json(staff, "POST", pub+"/events", map[string]any{"id": "s1", "type": "github.star", "subject": "alice", "fields": map[string]any{"repo": "a"}, "evidence": map[string]any{"source": "github", "url": "https://github.com/hanzoai/x", "needs_review": true}}, 200, nil)
 	r.json(staff, "DELETE", admin+"/programs/mini/rules/star", nil, 400, nil)
 	r.json(staff, "DELETE", admin+"/programs/mini", nil, 400, nil)
 	r.json(staff, "POST", admin+"/programs", map[string]any{"id": "empty", "name": "Empty"}, 201, nil)

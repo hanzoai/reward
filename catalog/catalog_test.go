@@ -68,7 +68,7 @@ func TestCatalogListsEveryEventUnderAPillar(t *testing.T) {
 
 func TestAnEventMustBeExactlyWhatTheCatalogLists(t *testing.T) {
 	ok := func() Event {
-		return Event{ID: "e", Type: "github.pr.merged", Subject: "u", Fields: map[string]any{"repo": "r", "labels": []any{"bug"}, "kind": "fix"}}
+		return Event{ID: "e", Type: "github.pr.merged", Subject: "u", Fields: map[string]any{"repo": "r", "labels": []any{"bug"}, "kind": "fix"}, Evidence: &Evidence{Source: "github", URL: "https://github.com/hanzoai/x", NeedsReview: true}}
 	}
 	cases := map[string]func(*Event){
 		"unknown type":   func(e *Event) { e.Type = "github.pr.closed" },

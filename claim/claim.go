@@ -108,6 +108,10 @@ type Claim struct {
 	Fields map[string]any `json:"fields"`
 	Then   []rule.Action  `json:"then"`
 
+	// Evidence is what the host stated of where the happening took place and what
+	// its checks found, for the staff member who decides the claim.
+	Evidence *catalog.Evidence `json:"evidence,omitempty"`
+
 	// Reviewer, ReviewedAt and Note are the latest decision on the claim, copied
 	// from its steps when it is settled.
 	Reviewer   string    `json:"reviewer,omitempty"`
