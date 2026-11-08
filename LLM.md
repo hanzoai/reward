@@ -96,7 +96,7 @@ built); the rest can. Rejected and reversed claims free their limits and budget.
 event that is not exactly the listed fields. `usage.tokens.tokens` is the subject's
 *lifetime* verified total when the event was emitted, so a milestone is a `gte` rule
 with `once: subject`. `model.used.model` is the canonical id; aliases never arrive.
-`github.fork {repo, forker}` and `github.badge {repo, owner, badge: profile|built|deploy}` are
+`github.fork {repo, forker}` and `github.badge {repo, owner, badge: profile|built|rank|deploy}` are
 contribute events; cloud emits `github.badge` only after its verifier confirmed the
 repo is public, owned by the subject's linked GitHub identity, and carries the badge.
 
