@@ -906,3 +906,52 @@ func TestAWeekKeyAllowsOneAwardPerNetworkPerWeek(t *testing.T) {
 		t.Errorf("a key naming no field: %v, want a refusal", err)
 	}
 }
+
+func TestEachBadgeKindOfAReadmeEarnsOncePerRepoAndKindNeverTwice(t *testing.T) {
+	r := newRig(t, nil, rule.Rule{ID: "b", Name: "b", Active: true, When: rule.When{Event: "github.badge"}, Then: []rule.Action{pts(10, false)},
+		Limits: rule.Limits{Once: rule.Keyed, KeyField: "repo+badge"}})
+	badge := func(id, repo, kind string) Decision {
+		out := r.eval(catalog.Event{ID: id, Type: "github.badge", Subject: "alice", Fields: map[string]any{"repo": repo, "owner": "alice", "badge": kind},
+			Evidence: &catalog.Evidence{Source: "github", URL: "https://github.com/" + repo, NeedsReview: true}})
+		return r.decision(out, "b")
+	}
+	for _, kind := range []string{"built", "profile", "rank"} {
+		if d := badge("alice/proj:"+kind, "alice/proj", kind); d.Result != Claimed {
+			t.Errorf("%s: %+v", kind, d)
+		}
+	}
+	// the same kind again, however the event is named, is withheld.
+	if d := badge("alice/proj:built:again", "alice/proj", "built"); d.Result == Claimed {
+		t.Errorf("the same kind twice made a second claim: %+v", d)
+	}
+	// a second repository, the member's profile repository, has its own.
+	if d := badge("alice/alice:profile", "alice/alice", "profile"); d.Result != Claimed {
+		t.Errorf("a second repository: %+v", d)
+	}
+	if n := len(r.claims("alice")); n != 4 {
+		t.Errorf("claims = %d, want 4", n)
+	}
+}
+
+func TestAReferredPersonIsWelcomedOnceAndNeverByThemselves(t *testing.T) {
+	r := newRig(t, nil, rule.Rule{ID: "w", Name: "w", Active: true, When: rule.When{Event: catalog.Welcomed}, Then: []rule.Action{pts(10, false)},
+		Limits: rule.Limits{Once: rule.Subject}})
+	welcome := func(id, subject, sponsor string) (Outcome, error) {
+		return r.e.Evaluate(r.ctx, catalog.Event{ID: id, Type: catalog.Welcomed, Subject: subject, Fields: map[string]any{"sponsor": sponsor}})
+	}
+	out, err := welcome("referral.welcomed:newco", "alice", "bob")
+	if err != nil || r.decision(out, "w").Result != Claimed {
+		t.Fatalf("welcome: %+v %v", out, err)
+	}
+	// a second welcome for the same person under another source id is withheld: once per person.
+	out, err = welcome("referral.welcomed:otherco", "alice", "carol")
+	if err != nil || r.decision(out, "w").Result == Claimed {
+		t.Errorf("a second welcome: %+v %v", out, err)
+	}
+	if _, err := welcome("referral.welcomed:self", "dave", "dave"); !refuse.Is(err) {
+		t.Errorf("a person welcoming themselves: %v, want a refusal", err)
+	}
+	if n := len(r.claims("alice")); n != 1 {
+		t.Errorf("alice's claims = %d, want 1", n)
+	}
+}

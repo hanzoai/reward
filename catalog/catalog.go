@@ -103,6 +103,9 @@ func choice(n string, v ...string) Field { return Field{Name: n, Kind: Choice, V
 // itself, before any rule does.
 const Linked = "referral.linked"
 
+// Welcomed is the event that thanks a referred person for their first real task.
+const Welcomed = "referral.welcomed"
+
 // events is THE list.
 var events = []EventType{
 	{Name: "usage.tokens", Pillar: Use, Title: "Tokens used",
@@ -121,6 +124,9 @@ var events = []EventType{
 		About: "A person a subject referred came back at least seven days after they activated."},
 	{Name: Linked, Pillar: Share, Title: "Referral linked",
 		About:  "A person's sign-up was attributed to a sponsor.",
+		Fields: []Field{text("sponsor")}},
+	{Name: Welcomed, Pillar: Share, Title: "Referred person welcomed",
+		About:  "A person someone referred ran their first real task. The event is about the referred person; sponsor is the person who referred them.",
 		Fields: []Field{text("sponsor")}},
 	{Name: "social.post.verified", Pillar: Share, Title: "Post verified",
 		About:  "A subject's public post carrying their link was fetched and found still up a week later. week is the ISO year-week of the post's publication, such as 2026-W46, so a later week's post can earn again.",

@@ -139,9 +139,15 @@ func (e *Engine) Evaluate(ctx context.Context, ev catalog.Event) (Outcome, error
 	if err := ev.Validate(); err != nil {
 		return out, err
 	}
-	if ev.Type == catalog.Linked {
+	switch ev.Type {
+	case catalog.Linked:
 		if err := e.link(ctx, ev); err != nil {
 			return out, err
+		}
+	case catalog.Welcomed:
+		// A person is not welcomed by themselves.
+		if s, _ := ev.Fields["sponsor"].(string); strings.TrimSpace(s) == ev.Subject {
+			return out, refuse.New("%s cannot welcome themselves", ev.Subject)
 		}
 	}
 	progs, err := e.Programs(ctx)

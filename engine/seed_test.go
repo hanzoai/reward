@@ -71,7 +71,7 @@ func TestTheSeedHoldsTheApprovedValuesAndNothingElseIsOn(t *testing.T) {
 	}{
 		"tokens-100k": {10, false}, "tokens-1m": {20, false}, "tokens-5m": {30, false}, "tokens-10m": {40, false},
 		"tokens-100m": {75, false}, "tokens-1b": {100, false}, "tokens-10b": {150, false}, "tokens-100b": {200, false}, "tokens-1t": {300, false},
-		"referral-activated": {25, false}, "referral-retained": {25, true},
+		"referral-activated": {25, false}, "referral-retained": {25, true}, "welcome-bonus": {10, false},
 		"pr-feature": {50, true}, "pr-fix": {75, true}, "pr-docs": {30, true}, "pr-translation": {30, true},
 		"issue-accepted": {10, true},
 		// the owner's later values: +1 per star, follow and fork, +10 per README badge.
@@ -89,8 +89,12 @@ func TestTheSeedHoldsTheApprovedValuesAndNothingElseIsOn(t *testing.T) {
 			t.Errorf("%s: %+v, want %d points redeemable=%v", id, pa, w.points, w.redeemable)
 		}
 	}
+	// each badge a README carries counts once per repository: repo and badge together.
+	if l := p.Find("github-badge").Limits; l.Once != rule.Keyed || l.KeyField != "repo+badge" || l.PerDay != 0 || l.PerMonth != 0 {
+		t.Errorf("github-badge limits = %+v, want once per subject, repo and badge", l)
+	}
 	// every repo and every account counts once, with no list and no cap.
-	for id, key := range map[string]string{"github-star": "repo", "github-fork": "repo", "github-badge": "repo", "github-follow": "target"} {
+	for id, key := range map[string]string{"github-star": "repo", "github-fork": "repo", "github-follow": "target"} {
 		if l := p.Find(id).Limits; l.Once != rule.Keyed || l.KeyField != key || l.PerDay != 0 || l.PerMonth != 0 {
 			t.Errorf("%s limits = %+v, want once per subject and %s only", id, l, key)
 		}
