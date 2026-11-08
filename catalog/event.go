@@ -30,6 +30,10 @@ type Event struct {
 	At time.Time `json:"at,omitzero"`
 	// Fields are the values the catalog lists for Type, exactly.
 	Fields map[string]any `json:"fields"`
+	// Evidence is where a happening on someone else's site took place and what the
+	// host's checks found there. An event whose type asks for it is refused
+	// without it.
+	Evidence *Evidence `json:"evidence,omitempty"`
 }
 
 const maxText = 256
@@ -49,6 +53,14 @@ func (e *Event) Validate() error {
 	ev, ok := Type(e.Type)
 	if !ok {
 		return refuse.New("%q is not an event in the catalog", e.Type)
+	}
+	switch {
+	case e.Evidence != nil:
+		if err := e.Evidence.Validate(); err != nil {
+			return err
+		}
+	case ev.Evidence:
+		return refuse.New("%s needs evidence: the URL it happened at and the checks run on it, or needs_review", ev.Name)
 	}
 	out := make(map[string]any, len(ev.Fields))
 	for _, f := range ev.Fields {

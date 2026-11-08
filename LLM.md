@@ -98,6 +98,28 @@ with `once: subject`. `model.used.model` is the canonical id; aliases never arri
 contribute events; cloud emits `github.badge` only after its verifier confirmed the
 repo is public, owned by the subject's linked GitHub identity, and carries the badge.
 
+## Evidence
+
+An event that takes place on someone else's site (`social.post.verified`, `github.*`,
+`bounty.completed`, `submission.video`, `deploy.button`; the
+catalog marks them `evidence: true`) is refused without `evidence`:
+
+```
+{source, url, needs_review?, checks?: [{fetched_at, status, public, ref_found?, author_match}], recheck?: {at, result}}
+```
+
+`source` is the network or site, `url` its canonical https URL. `checks` is the host's
+history of automated looks, oldest first (a post is looked at every day of its week);
+`author_match` is `yes`, `no` or `unknown`; `ref_found` is stated only where a ref code
+is expected. `recheck` is the last look a held post waited for (`ok` or `removed`). A
+source the host cannot read arrives `needs_review: true` with no checks and no recheck;
+a host never claims a check it did not run. The claim keeps the evidence verbatim, and
+`GET /v1/admin/reward/claims` shows it beside the claim it decides. Every rule stays
+manual: the evidence is for the staff member, not a substitute for one.
+
+`Limits.KeyField` may name several fields joined by `+` (`network+week`): the key is
+their values together, so a subject earns once per network per week.
+
 ## Seed (`engine/seed/rewards.json`, program `hanzo-rewards`)
 
 Created once on first mount (`Seed`), never overwritten: after that admin owns it.
@@ -115,6 +137,8 @@ later values; everything else is inactive at 0 points. All are manual.
   +target), no list and no cap; README badge `github.badge` +10, once per subject+repo.
   These override the spec's "star/follow 0, badge only".
 - Inactive, 0 points, staff set the value: a post per product and per model family,
+  `weekly-share` (a verified post, once per subject, network and ISO week, so a later
+  week's post earns again),
   a demo video per app, a test report per core product and beta, benchmark added,
   tests PR merged, "try" badges per product (18) and model family (Zen, Enso, Kai),
   and four expert rules.

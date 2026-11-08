@@ -247,9 +247,9 @@ func (e *Engine) consider(ctx context.Context, p *rule.Program, r *rule.Rule, ev
 	c.Event, c.EventID, c.EventAt, c.Subject, c.Org, c.Email = ev.Type, ev.ID, ev.At, ev.Subject, ev.Org, ev.Email
 	c.Day, c.Month = now.Format("2006-01-02"), now.Format("2006-01")
 	c.Points, c.CreditCents, c.Status = points, cents, claim.Pending
-	c.Fields, c.Then = ev.Fields, r.Then
+	c.Fields, c.Then, c.Evidence = ev.Fields, r.Then, ev.Evidence
 	if r.Limits.Once == rule.Keyed {
-		c.Slot = fmt.Sprint(ev.Fields[r.Limits.KeyField])
+		c.Slot = r.Limits.Slot(ev.Fields)
 	}
 
 	d, err := e.admit(ctx, p, r, c, d, now, dry)

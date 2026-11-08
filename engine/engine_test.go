@@ -59,7 +59,7 @@ func TestAnInactiveProgramAwardsNothing(t *testing.T) {
 
 func TestAnInvalidEventIsRefused(t *testing.T) {
 	r := newRig(t, nil, star("s", pts(1, false)))
-	_, err := r.e.Evaluate(r.ctx, catalog.Event{ID: "e1", Type: "github.star", Subject: "alice", Fields: map[string]any{}})
+	_, err := r.e.Evaluate(r.ctx, catalog.Event{ID: "e1", Type: "github.star", Subject: "alice", Fields: map[string]any{}, Evidence: &catalog.Evidence{Source: "github", URL: "https://github.com/hanzoai/x", NeedsReview: true}})
 	if !refuse.Is(err) {
 		t.Errorf("err = %v, want a refusal", err)
 	}
@@ -508,7 +508,7 @@ func TestLifetimeAndRedeemableAreSeparateFolds(t *testing.T) {
 	follow := rule.Rule{ID: "pr", Name: "pr", Active: true, When: rule.When{Event: "github.follow"}, Then: []rule.Action{pts(70, true)}}
 	r := newRig(t, nil, star("rep", pts(30, false)), follow)
 	a := r.decision(r.eval(r.starEvent("e1", "alice", "x")), "rep").Claim
-	f := r.decision(r.eval(catalog.Event{ID: "e2", Type: "github.follow", Subject: "alice", Fields: map[string]any{"target": "hanzoai"}}), "pr").Claim
+	f := r.decision(r.eval(catalog.Event{ID: "e2", Type: "github.follow", Subject: "alice", Fields: map[string]any{"target": "hanzoai"}, Evidence: &catalog.Evidence{Source: "github", URL: "https://github.com/hanzoai/x", NeedsReview: true}}), "pr").Claim
 	for _, c := range []*claim.Claim{a, f} {
 		if _, err := r.e.Approve(r.ctx, c.Id(), "staff"); err != nil {
 			t.Fatal(err)
@@ -850,5 +850,58 @@ func TestClaimsListByStatusNewestFirst(t *testing.T) {
 	page, _ := r.e.Claims(r.ctx, Filter{Limit: 1, Offset: 1})
 	if len(page) != 1 {
 		t.Errorf("page = %d", len(page))
+	}
+}
+
+func TestAClaimCarriesTheEvidenceTheEventStated(t *testing.T) {
+	r := newRig(t, nil, star("s", pts(1, false)))
+	ev := r.starEvent("e1", "alice", "x")
+	yes := true
+	ev.Evidence = &catalog.Evidence{Source: "github", URL: "https://github.com/hanzoai/x",
+		Checks: []catalog.Check{{FetchedAt: r.now, Status: 200, Public: true, RefFound: &yes, AuthorMatch: catalog.Unknown}}}
+	d := r.decision(r.eval(ev), "s")
+	got, err := r.e.Claim(r.ctx, d.Claim.Id())
+	if err != nil || got.Evidence == nil || got.Evidence.URL != "https://github.com/hanzoai/x" || len(got.Evidence.Checks) != 1 || got.Evidence.Checks[0].AuthorMatch != catalog.Unknown {
+		t.Fatalf("the claim read back %+v, %v", got.Evidence, err)
+	}
+	review := r.starEvent("e2", "alice", "y")
+	review.Evidence = &catalog.Evidence{Source: "linkedin", URL: "https://www.linkedin.com/posts/x", NeedsReview: true}
+	d = r.decision(r.eval(review), "s")
+	got, _ = r.e.Claim(r.ctx, d.Claim.Id())
+	if got.Evidence == nil || !got.Evidence.NeedsReview || len(got.Evidence.Checks) != 0 {
+		t.Errorf("a source for review read back %+v", got.Evidence)
+	}
+}
+
+func TestAWeekKeyAllowsOneAwardPerNetworkPerWeek(t *testing.T) {
+	weekly := rule.Rule{ID: "w", Name: "w", Active: true, When: rule.When{Event: "social.post.verified"}, Then: []rule.Action{pts(5, false)},
+		Limits: rule.Limits{Once: rule.Keyed, KeyField: "network+week"}}
+	r := newRig(t, nil, weekly)
+	post := func(id, network, week string) Decision {
+		out := r.eval(catalog.Event{ID: id, Type: "social.post.verified", Subject: "alice",
+			Fields:   map[string]any{"network": network, "url": "https://example.com/" + id, "product": "", "model": "", "week": week},
+			Evidence: &catalog.Evidence{Source: network, URL: "https://example.com/" + id, NeedsReview: true}})
+		return r.decision(out, "w")
+	}
+	if d := post("p1", "bluesky", "2026-W46"); d.Result != Claimed {
+		t.Fatalf("first post of the week: %+v", d)
+	}
+	if d := post("p2", "bluesky", "2026-W46"); d.Result == Claimed {
+		t.Errorf("a second bluesky post in the same week earned again: %+v", d)
+	}
+	if d := post("p3", "reddit", "2026-W46"); d.Result != Claimed {
+		t.Errorf("a post on another network in the same week: %+v", d)
+	}
+	if d := post("p4", "bluesky", "2026-W47"); d.Result != Claimed {
+		t.Errorf("a post the next week: %+v", d)
+	}
+	if n := len(r.claims("alice")); n != 3 {
+		t.Errorf("claims = %d, want 3", n)
+	}
+	// a key field that is not a field of the event is refused when the rule is saved.
+	bad := weekly
+	bad.ID, bad.Limits.KeyField = "bad", "network+month"
+	if _, err := r.e.SaveRule(r.ctx, r.slug, bad, "tester"); !refuse.Is(err) {
+		t.Errorf("a key naming no field: %v, want a refusal", err)
 	}
 }

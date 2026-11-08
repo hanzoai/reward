@@ -14,7 +14,7 @@ func (r *rig) earn() {
 	r.seeded()
 	var out engine.Outcome
 	r.json(staff, "POST", pub+"/events", map[string]any{"id": "star-1", "type": "github.star", "subject": "alice", "email": "alice@example.com",
-		"fields": map[string]any{"repo": "hanzoai/commerce"}}, 200, &out)
+		"fields": map[string]any{"repo": "hanzoai/commerce"}, "evidence": map[string]any{"source": "github", "url": "https://github.com/hanzoai/x", "needs_review": true}}, 200, &out)
 	for _, d := range out.Decisions {
 		if d.Claim != nil {
 			r.json(staff, "POST", admin+"/claims/"+d.Claim.Id()+"/approve", nil, 200, nil)

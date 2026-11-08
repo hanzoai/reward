@@ -159,3 +159,19 @@ func TestTheSeedHoldsTheApprovedValuesAndNothingElseIsOn(t *testing.T) {
 		}
 	}
 }
+
+func TestTheWeeklyShareRuleIsSeededOffAndKeyedByNetworkAndWeek(t *testing.T) {
+	ctx := context.Background()
+	e := &Engine{DB: openDB(t)}
+	if _, err := e.Seed(ctx); err != nil {
+		t.Fatal(err)
+	}
+	p, _ := e.Program(ctx, "hanzo-rewards")
+	r := p.Find("weekly-share")
+	if r == nil || r.Active || r.Approval != rule.Manual || r.Then[0].Points != 0 {
+		t.Fatalf("weekly-share = %+v, want inactive, manual, 0 points", r)
+	}
+	if l := r.Limits; l.Once != rule.Keyed || l.KeyField != "network+week" {
+		t.Errorf("limits = %+v, want once per subject, network and week", l)
+	}
+}

@@ -9,7 +9,7 @@ import (
 
 func TestConditionsMatch(t *testing.T) {
 	pr := catalog.Event{ID: "e", Type: "github.pr.merged", Subject: "u", Fields: map[string]any{
-		"repo": "hanzoai/Commerce", "labels": []any{"Bug", "p1"}, "kind": "fix"}}
+		"repo": "hanzoai/Commerce", "labels": []any{"Bug", "p1"}, "kind": "fix"}, Evidence: &catalog.Evidence{Source: "github", URL: "https://github.com/hanzoai/x", NeedsReview: true}}
 	tok := catalog.Event{ID: "e", Type: "usage.tokens", Subject: "u", Fields: map[string]any{"tokens": 5_000_000, "model": "zen4-mini"}}
 	job := catalog.Event{ID: "e", Type: "expert.job.delivered", Subject: "u", Fields: map[string]any{"job": "j1", "rating": 4.5}}
 	test := catalog.Event{ID: "e", Type: "submission.test", Subject: "u", Fields: map[string]any{"product": "koma", "beta": true}}

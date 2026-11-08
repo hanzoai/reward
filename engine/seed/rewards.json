@@ -2197,6 +2197,27 @@
    }
   },
   {
+   "id": "weekly-share",
+   "name": "Weekly share",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "network+week"
+   }
+  },
+  {
    "id": "video-cli",
    "name": "Demo video: CLI",
    "pillar": "contribute",
