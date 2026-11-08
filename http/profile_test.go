@@ -1,8 +1,10 @@
 package http_test
 
 import (
+	"slices"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/hanzoai/reward/engine"
 	"github.com/hanzoai/reward/rule"
@@ -230,5 +232,265 @@ func TestTheBadgeSVGEscapesWhatAnAdminTyped(t *testing.T) {
 		if !strings.Contains(string(svg), "&lt;script&gt;") {
 			t.Errorf("%s: the text is missing: %s", style, svg)
 		}
+	}
+}
+
+// award posts an event about alice and approves every claim it makes.
+func (r *rig) award(id, typ string, fields map[string]any) {
+	r.t.Helper()
+	var out engine.Outcome
+	r.json(staff, "POST", pub+"/events", map[string]any{"id": id, "type": typ, "subject": "alice", "email": "alice@example.com", "fields": fields}, 200, &out)
+	for _, d := range out.Decisions {
+		if d.Claim != nil {
+			r.json(staff, "POST", admin+"/claims/"+d.Claim.Id()+"/approve", nil, 200, nil)
+		}
+	}
+}
+
+// rarities sets the rarity of badges of the seed program by id.
+func (r *rig) rarities(by map[string]rule.Rarity) {
+	r.t.Helper()
+	prog, err := r.e.Program(t0(), "hanzo-rewards")
+	if err != nil {
+		r.t.Fatal(err)
+	}
+	badges := slices.Clone(prog.Badges)
+	for i := range badges {
+		if x, ok := by[badges[i].ID]; ok {
+			badges[i].Rarity = x
+		}
+	}
+	in := rule.Program{Name: prog.Name, Active: prog.Active, Budget: prog.Budget, Upline: prog.Upline, Levels: prog.Levels, Badges: badges, Templates: prog.Templates}
+	if _, err := r.e.SaveProgram(t0(), "hanzo-rewards", in, "z"); err != nil {
+		r.t.Fatal(err)
+	}
+}
+
+func (r *rig) svg(path string) string {
+	r.t.Helper()
+	code, body, h := r.do(nobody, "GET", pub+"/badge/"+path, nil)
+	if code != 200 {
+		r.t.Fatalf("%s = %d: %s", path, code, body)
+	}
+	if cc := h.Get("Cache-Control"); cc != "no-cache, max-age=0" {
+		r.t.Errorf("%s: Cache-Control = %q", path, cc)
+	}
+	return string(body)
+}
+
+func TestTheBadgeSVGSaysTheFieldsAskedInTheOrderGiven(t *testing.T) {
+	r := newRig(t)
+	clock := time.Date(2026, 11, 1, 12, 0, 0, 0, time.UTC)
+	r.e.Now = func() time.Time { return clock }
+	r.earn()
+	r.json(alice, "PUT", pub+"/me/profile", map[string]any{"handle": "alice", "public": true}, 200, nil)
+
+	// the default, and a label of one's own.
+	svg := r.svg("alice.svg")
+	if !strings.Contains(svg, ">Hanzo</text>") || !strings.Contains(svg, "Builder · 121 pts") || strings.Contains(svg, "Stargazer") {
+		t.Errorf("default = %s", svg)
+	}
+	if svg := r.svg("alice.svg?label=Zoo"); !strings.Contains(svg, ">Zoo</text>") || strings.Contains(svg, "Hanzo") {
+		t.Errorf("label = %s", svg)
+	}
+	if svg := r.svg("alice.svg?label=%3Cb%3E%26%22x"); !strings.Contains(svg, "&lt;b&gt;&amp;&#34;x") || strings.Contains(svg, "<b>") {
+		t.Errorf("label markup = %s", svg)
+	}
+	if svg := r.svg("alice.svg?fields=points,level"); strings.Index(svg, "121 pts") > strings.Index(svg, "Builder") || !strings.Contains(svg, "121 pts · Builder") {
+		t.Errorf("order = %s", svg)
+	}
+	if svg := r.svg("alice.svg?fields=level"); strings.Contains(svg, "pts") {
+		t.Errorf("level only = %s", svg)
+	}
+
+	// no token milestone yet: the field is left out, and nothing is drawn empty.
+	svg = r.svg("alice.svg?fields=level,tokens")
+	if !strings.Contains(svg, "Builder</text>") || strings.Contains(svg, "·") {
+		t.Errorf("no tier = %s", svg)
+	}
+	svg = r.svg("alice.svg?fields=tokens")
+	if strings.Count(svg, "<text") != 1 {
+		t.Errorf("nothing to say = %s", svg)
+	}
+
+	// 5M tokens earns the 100K, 1M and 5M badges: the tier is the highest, by its name.
+	clock = clock.Add(time.Hour)
+	r.award("tok-5m", "usage.tokens", map[string]any{"tokens": 5_000_000, "model": "zen4"})
+	svg = r.svg("alice.svg?fields=tokens")
+	if !strings.Contains(svg, "Five Million") || strings.Contains(svg, "Million Token Club") || strings.Contains(svg, "First 100K") {
+		t.Errorf("tier = %s", svg)
+	}
+	// 10B tokens reaches Titan past Ten Million, Century and Billionaire in one event;
+	// making the lowest tier the rarest changes nothing about which is highest.
+	r.rarities(map[string]rule.Rarity{"first-100k": rule.Legendary})
+	clock = clock.Add(time.Hour)
+	r.award("tok-10b", "usage.tokens", map[string]any{"tokens": 10_000_000_000, "model": "zen4"})
+	svg = r.svg("alice.svg?fields=level,points,tokens")
+	if !strings.Contains(svg, "Shipper · ") || !strings.Contains(svg, " pts · Titan") {
+		t.Errorf("highest tier = %s", svg)
+	}
+	for _, count := range []string{"5000000", "10000000000", "5M", "10B"} {
+		if strings.Contains(svg, count) {
+			t.Errorf("a token count %s is on the picture: %s", count, svg)
+		}
+	}
+
+	// alice holds eight badges. First 100K is legendary; Stargazer, earned first, and
+	// Titan, earned last, are epic: the top three are the legendary one and then the
+	// epic ones, the most recently earned first (not by name: Stargazer sorts before
+	// Titan).
+	r.rarities(map[string]rule.Rarity{"first-100k": rule.Legendary, "stargazer": rule.Epic, "titan": rule.Epic})
+	svg = r.svg("alice.svg?fields=badges&style=card")
+	names := []string{"First 100K", "Titan", "Stargazer"}
+	at := -1
+	for _, n := range names {
+		i := strings.Index(svg, ">"+n+"<")
+		if i < at || i < 0 {
+			t.Errorf("%q is not drawn after the one before it: %s", n, svg)
+		}
+		at = i
+	}
+	if strings.Count(svg, "<circle") != 3 || strings.Contains(svg, "Million") || strings.Contains(svg, "Century") {
+		t.Errorf("only the top three are drawn: %s", svg)
+	}
+	// the top three as one line, after the other fields.
+	if svg := r.svg("alice.svg?fields=level,badges"); !strings.Contains(svg, "Shipper · First 100K, Titan, Stargazer") {
+		t.Errorf("flat badges = %s", svg)
+	}
+
+	// everyone's picture is their own: bob holds nothing and his badges are left out.
+	r.json(bob, "PUT", pub+"/me/profile", map[string]any{"handle": "bob", "public": true}, 200, nil)
+	if svg := r.svg("bob.svg?fields=level,tokens,badges&style=card"); strings.Contains(svg, "<circle") || strings.Contains(svg, "no badges") || !strings.Contains(svg, "Hacker") {
+		t.Errorf("bob = %s", svg)
+	}
+	// and the card draws the four fields in the order given: the fields before the
+	// badges are on the line under the handle.
+	svg = r.svg("alice.svg?fields=badges,tokens,points,level&style=card")
+	if !strings.Contains(svg, "Titan · ") || !strings.Contains(svg, " pts · Shipper<") {
+		t.Errorf("card = %s", svg)
+	}
+}
+
+// every query the route refuses, with the reason it is wrong.
+var badOptions = map[string]string{
+	"unknown field":   "fields=level,rank",
+	"duplicate field": "fields=level,points,level",
+	"empty fields":    "fields=",
+	"empty name":      "fields=level,,points",
+	"trailing comma":  "fields=level,",
+	"field case":      "fields=Level",
+	"label 25":        "label=" + strings.Repeat("a", 25),
+	"label 25 runes":  "label=" + strings.Repeat("%C3%A9", 25),
+	"empty label":     "label=",
+	"newline":         "label=a%0Ab",
+	"carriage return": "label=a%0Db",
+	"tab":             "label=a%09b",
+	"nul":             "label=a%00b",
+	"delete":          "label=a%7Fb",
+	"invalid utf-8":   "label=a%FFb",
+	"theme":           "theme=neon",
+	"style":           "style=huge",
+	"one bad of many": "theme=light&style=card&fields=level,points&label=" + strings.Repeat("a", 25),
+}
+
+func TestTheBadgeSVGRefusesWhatItCannotDraw(t *testing.T) {
+	r := newRig(t)
+	r.earn()
+	r.json(alice, "PUT", pub+"/me/profile", map[string]any{"handle": "alice", "public": true}, 200, nil)
+	for name, q := range badOptions {
+		var doc struct {
+			Error struct{ Type, Message string } `json:"error"`
+		}
+		r.json(nobody, "GET", pub+"/badge/alice.svg?"+q, nil, 400, &doc)
+		if doc.Error.Type != "api-error" || doc.Error.Message == "" {
+			t.Errorf("%s: the refusal is %+v", name, doc)
+		}
+	}
+	// the longest label, in runes and not bytes, and every field, are drawn.
+	for _, q := range []string{"label=" + strings.Repeat("a", 24), "label=" + strings.Repeat("%C3%A9", 24), "fields=badges,tokens,points,level", "theme=&style=&fields=level", "label=a+b%20c"} {
+		r.svg("alice.svg?" + q)
+	}
+}
+
+// Options are read before the handle, so a bad one is the same 400 for a public
+// profile, a private one and a handle nobody holds: it cannot be used to ask whether
+// a handle exists. A good request for the last two is the same 404.
+func TestABadOptionNeverSaysWhetherTheHandleExists(t *testing.T) {
+	r := newRig(t)
+	r.earn()
+	r.json(alice, "PUT", pub+"/me/profile", map[string]any{"handle": "alice", "public": true}, 200, nil)
+	r.json(bob, "PUT", pub+"/me/profile", map[string]any{"handle": "bob", "public": false}, 200, nil)
+	for name, q := range badOptions {
+		var want []byte
+		for _, handle := range []string{"alice", "bob", "ghost"} {
+			code, body, _ := r.do(nobody, "GET", pub+"/badge/"+handle+".svg?"+q, nil)
+			if code != 400 {
+				t.Errorf("%s: %s = %d, want 400", name, handle, code)
+			}
+			if want == nil {
+				want = body
+			} else if string(body) != string(want) {
+				t.Errorf("%s: %s answers %s, not %s", name, handle, body, want)
+			}
+		}
+	}
+	var want []byte
+	for _, handle := range []string{"bob", "ghost"} {
+		code, body, h := r.do(nobody, "GET", pub+"/badge/"+handle+".svg?fields=level,tokens&label=x", nil)
+		if code != 404 || h.Get("ETag") != "" {
+			t.Errorf("%s = %d", handle, code)
+		}
+		if want == nil {
+			want = body
+		} else if string(body) != string(want) {
+			t.Errorf("%s answers %s, not %s", handle, body, want)
+		}
+	}
+}
+
+func TestTheBadgeSVGRevalidatesPerOptionAndItsTagFollowsThePicture(t *testing.T) {
+	r := newRig(t)
+	r.earn()
+	r.json(alice, "PUT", pub+"/me/profile", map[string]any{"handle": "alice", "public": true}, 200, nil)
+	r.award("tok-1m", "usage.tokens", map[string]any{"tokens": 1_000_000, "model": "zen4"})
+
+	queries := []string{"", "theme=light", "style=card", "fields=level", "fields=points,level", "fields=level,points,tokens", "fields=level,badges&style=card", "label=Zoo", "label=Hanzo+rewards&fields=level,tokens"}
+	tags := map[string]string{}
+	for _, q := range queries {
+		code, _, h := r.do(nobody, "GET", pub+"/badge/alice.svg?"+q, nil)
+		tag := h.Get("ETag")
+		if code != 200 || tag == "" || h.Get("Cache-Control") != "no-cache, max-age=0" {
+			t.Fatalf("%q = %d %q %q", q, code, tag, h.Get("Cache-Control"))
+		}
+		if prev, dup := tags[tag]; dup {
+			t.Errorf("%q and %q are different pictures with the same tag %s", prev, q, tag)
+		}
+		tags[tag] = q
+		// the tag revalidates its own picture: 304 and no body, with the same headers.
+		code, body, h2 := r.do(who{"If-None-Match": tag}, "GET", pub+"/badge/alice.svg?"+q, nil)
+		if code != 304 || len(body) != 0 || h2.Get("ETag") != tag || h2.Get("Cache-Control") != "no-cache, max-age=0" {
+			t.Errorf("%q revalidation = %d (%d bytes) %q %q", q, code, len(body), h2.Get("ETag"), h2.Get("Cache-Control"))
+		}
+		// and no other option's picture: the tag of this one asked of the default is a 200.
+		if q != "" {
+			if code, _, _ := r.do(who{"If-None-Match": tag}, "GET", pub+"/badge/alice.svg", nil); code != 200 {
+				t.Errorf("%q: its tag revalidated the default picture: %d", q, code)
+			}
+		}
+	}
+
+	// the same picture said another way is the same tag: ?theme= and ?style= empty are the defaults.
+	_, _, a := r.do(nobody, "GET", pub+"/badge/alice.svg", nil)
+	_, _, b := r.do(nobody, "GET", pub+"/badge/alice.svg?theme=dark&style=flat&fields=level,points&label=Hanzo", nil)
+	if a.Get("ETag") != b.Get("ETag") {
+		t.Errorf("the default spelled out has another tag: %s %s", a.Get("ETag"), b.Get("ETag"))
+	}
+
+	// the tag moves when the standing does, whatever the options.
+	_, _, before := r.do(nobody, "GET", pub+"/badge/alice.svg?fields=tokens&label=Zoo", nil)
+	r.award("tok-5m", "usage.tokens", map[string]any{"tokens": 5_000_000, "model": "zen4"})
+	code, _, after := r.do(who{"If-None-Match": before.Get("ETag")}, "GET", pub+"/badge/alice.svg?fields=tokens&label=Zoo", nil)
+	if code != 200 || after.Get("ETag") == before.Get("ETag") {
+		t.Errorf("after a new tier: %d %s %s", code, before.Get("ETag"), after.Get("ETag"))
 	}
 }
