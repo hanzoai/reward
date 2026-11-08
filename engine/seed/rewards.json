@@ -593,6 +593,27 @@
    }
   },
   {
+   "id": "welcome-bonus",
+   "name": "Welcome bonus",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.welcomed"
+   },
+   "if": [],
+   "then": [
+    {
+     "type": "points",
+     "points": 10
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
    "id": "github-star",
    "name": "Starred a repository",
    "pillar": "community",
@@ -668,7 +689,7 @@
   },
   {
    "id": "github-badge",
-   "name": "Hanzo badge in a README",
+   "name": "Hanzo badge in a README (each badge counts)",
    "pillar": "contribute",
    "active": true,
    "version": 1,
@@ -685,7 +706,7 @@
    ],
    "limits": {
     "once": "subject+key",
-    "keyField": "repo"
+    "keyField": "repo+badge"
    }
   },
   {

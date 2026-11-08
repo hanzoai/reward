@@ -122,6 +122,11 @@ manual: the evidence is for the staff member, not a substitute for one.
 `Limits.KeyField` may name several fields joined by `+` (`network+week`): the key is
 their values together, so a subject earns once per network per week.
 
+`referral.welcomed {sponsor}` (about the referred person) is the thanks to the person a
+referral brought in, stated with `referral.activated` when they run their first real
+task; the seed's `welcome-bonus` pays it +10, once per person. The engine refuses a
+person welcoming themselves.
+
 ## Seed (`engine/seed/rewards.json`, program `hanzo-rewards`)
 
 Created once on first mount (`Seed`), never overwritten: after that admin owns it.
@@ -136,7 +141,7 @@ later values; everything else is inactive at 0 points. All are manual.
   point caps across rules, which `Limits` cannot express; each rule alone respects the
   cap, together they may not. Levels as above. Credit ceiling $500/month.
 - Owner's later values: stars, forks, follows +1 each, `once` per subject+repo (or
-  +target), no list and no cap; README badge `github.badge` +10, once per subject+repo.
+  +target), no list and no cap; README badge `github.badge` +10, once per subject, repo and badge kind (`repo+badge`).
   These override the spec's "star/follow 0, badge only".
 - Inactive, 0 points, staff set the value: a post per product and per model family,
   `weekly-share` (a verified post, once per subject, network and ISO week, so a later

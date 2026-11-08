@@ -31,7 +31,7 @@ func TestCatalogListsEveryEventUnderAPillar(t *testing.T) {
 	}
 	want := map[string]Pillar{
 		"usage.tokens": Use, "product.used": Use, "model.used": Use,
-		"referral.activated": Share, "referral.retained": Share, "referral.linked": Share, "social.post.verified": Share,
+		"referral.activated": Share, "referral.retained": Share, "referral.linked": Share, "referral.welcomed": Share, "social.post.verified": Share,
 		"discord.joined": Community, "github.star": Community, "github.follow": Community,
 		"github.fork": Contribute, "github.badge": Contribute,
 		"github.issue.accepted": Contribute, "github.pr.merged": Contribute, "submission.video": Contribute,
