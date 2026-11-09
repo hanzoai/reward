@@ -294,6 +294,16 @@ func TestTheStaffQueueFromIngestToAwardAndBack(t *testing.T) {
 	r.json(staff, "POST", admin+"/claims/clm_nope/approve", nil, 404, nil)
 }
 
+// A member who has claimed nothing reads an empty list, not null: the hub maps over it.
+func TestNoClaimsIsAnEmptyList(t *testing.T) {
+	r := newRig(t)
+	r.seeded()
+	code, body, _ := r.do(alice, "GET", pub+"/me/claims", nil)
+	if code != 200 || !strings.Contains(string(body), `"claims":[]`) {
+		t.Errorf("GET /me/claims with none = %d %s", code, body)
+	}
+}
+
 func TestMeIsTheCallersOwnRecordsOnly(t *testing.T) {
 	r := newRig(t)
 	r.seeded()
