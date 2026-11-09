@@ -78,6 +78,6 @@ func Mount(app *zip.App, cfg Config) (*engine.Engine, error) {
 	}
 	http.Route(app, e)
 	log.Info("reward mounted", "prefix", http.Prefix, "admin", http.AdminPrefix,
-		"seeded", seeded.Created, "rulesAdded", seeded.Rules, "badgesAdded", seeded.Badges, "levelsReplaced", seeded.Levels, "uplineSet", seeded.Upline)
+		"seeded", seeded.Created, "rulesAdded", seeded.Rules, "badgesAdded", seeded.Badges, "rulesCorrected", seeded.Corrected, "levelsReplaced", seeded.Levels, "uplineSet", seeded.Upline)
 	return e, nil
 }

@@ -193,16 +193,25 @@ later values; everything else is inactive at 0 points. All are manual.
 
 ### Seed top-up
 
-The seed has its own `seedVersion` (1 today); a program has `SeedVersion` (json
+The seed has its own `seedVersion` (2 today); a program has `SeedVersion` (json
 `seedVersion`, set by the engine only: admin PUT and POST bodies ignore it, it is not part of
-the header). A program the first seed made (v0.1.4 and before) has 0. `Seed` runs on every
+the header). A program an unversioned seed made (v0.1.5 and before) has 0. `Seed` runs on every
 mount; when the stored program's `SeedVersion` is below the embedded one it tops the program
-up, once, and returns `Seeded{Created, Rules, Badges, Levels, Upline}` (Mount logs the counts):
+up, once, and returns `Seeded{Created, Rules, Badges, Corrected, Levels, Upline}` (Mount logs the counts):
 
 - every seed rule whose id is absent is appended at version 1, exactly as seeded, and every
-  seed badge whose id is absent is appended. A rule or badge that exists is never altered,
-  deactivated or removed, whatever its state. A rule staff deleted comes back when its id is
-  in the seed: an absent id cannot be told from one never added.
+  seed badge whose id is absent is appended. A badge that exists is never touched. A rule
+  staff deleted comes back when its id is in the seed: an absent id cannot be told from one
+  never added.
+- a rule that follows the seed: the store raises a rule's `Version` on every content change,
+  so a seed rule that exists at `Version` 1 has never been edited since it was seeded. If its
+  content (everything but `Version`, after settling empty fields) differs from the seed's, the
+  seed's replaces it at `Version` stored+1 (`Seeded.Corrected`, trail `rulesCorrected`). A claim
+  already made keeps the `Then` and `RuleVersion` it was made under, and its event is not
+  claimed again. A rule at `Version` 2 or more is staff's, active or not, and is never touched.
+  (A rule staff deleted and wrote anew under a seed id is at version 1 and looks unedited; it
+  follows the seed too.) Unlike an addition, a changed seed rule only reaches a program when
+  `seedVersion` is raised: raise it with the change.
 - `levels` is replaced with the seed's only if the stored table is still exactly the first
   seed's five levels (`firstLevels` in `engine/seed.go`: Hacker 0, Builder 100, Shipper 500,
   Core 2500, Legend 10000, no band). Any other table is staff's and stays.
@@ -210,7 +219,7 @@ up, once, and returns `Seeded{Created, Rules, Badges, Levels, Upline}` (Mount lo
 - `foundingCutoff`, the budget, the name and the templates are not touched.
 
 Then `Version` rises, `SeedVersion` becomes the seed's, and one `program.seeded` trail record
-(actor `seed`) names the counts and whether levels and upline were set. A program already at
+(actor `seed`) names the counts (`rules`, `badges`, `rulesCorrected`) and whether levels and upline were set. A program already at
 the seed's version is untouched, so a second mount does nothing. The program is read, changed
 and written in one pass with ids checked against the document being written: two replicas
 mounting together each write a whole document with every id once (a staff edit made between
@@ -218,8 +227,11 @@ that read and write is lost, as with any last-save-wins admin save); a top-up th
 before its write leaves `SeedVersion` behind and the next mount repeats it. A fresh store
 is created at the seed's version, with the `program.created` record and no `program.seeded`.
 To ship more seed content later, add it and raise the embedded `seedVersion`.
-The test `engine/testdata/seed-v0.1.4.json` is the first seed, from `git show
-v0.1.4:engine/seed/rewards.json`; v0.1.4 and v0.1.5 seeded the same document.
+Seed 2 added the correction; a program at seedVersion 1 (topped up by v0.1.6, which only
+appended) runs it on its next mount. The tests start from earlier seeds kept in `engine/testdata`,
+each from `git show <tag>:engine/seed/rewards.json`: `seed-v0.1.4.json` (v0.1.4 and v0.1.5 seeded
+the same document) and `seed-v0.1.2.json` (whose `github-badge` is once per repo, not per repo
+and badge).
 
 ## Levels
 

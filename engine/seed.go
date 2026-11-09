@@ -39,10 +39,11 @@ var firstLevels = []rule.Level{
 type Seeded struct {
 	// Created is true when the store had no program and Seed made it.
 	Created bool
-	// Rules and Badges are how many a top-up appended; Levels and Upline say whether
-	// it replaced those with the seed's.
-	Rules, Badges  int
-	Levels, Upline bool
+	// Rules and Badges are how many a top-up appended; Corrected is how many existing
+	// rules it replaced with the seed's; Levels and Upline say whether it replaced those
+	// with the seed's.
+	Rules, Badges, Corrected int
+	Levels, Upline           bool
 }
 
 // Seed creates the initial program from the embedded document when the store has
@@ -90,9 +91,14 @@ func (e *Engine) seed(ctx context.Context, raw []byte) (Seeded, error) {
 // topUp brings a program created by an earlier seed up to the embedded one, once:
 //
 //   - every seed rule and badge whose id the program lacks is appended, as seeded
-//     (rules at version 1). A rule or badge that exists is never touched, whatever
-//     its state: staff own it. A rule staff deleted comes back if its id is in the
-//     seed, because an absent id cannot be told from one never added.
+//     (rules at version 1). A badge that exists is never touched. A rule staff deleted
+//     comes back if its id is in the seed, because an absent id cannot be told from
+//     one never added.
+//   - a seed rule that exists at Version 1 has never been edited since it was seeded
+//     (the store raises Version on every content change), so it follows the seed: if
+//     its content differs, the seed's replaces it, at Version stored+1. Claims already
+//     made keep the Then they were made under. A rule at Version 2 or more is staff's,
+//     whatever its state, and is never touched.
 //   - the levels table is replaced only if it is still firstLevels.
 //   - the upline is set from the seed only if it is empty; a stored one stays.
 //
@@ -107,17 +113,29 @@ func (e *Engine) topUp(ctx context.Context, p *rule.Program, seed rule.Program) 
 	if p.SeedVersion >= seed.SeedVersion {
 		return out, nil
 	}
-	for _, r := range seed.Rules {
-		if p.Find(r.ID) == nil {
-			r.Version = 1
-			p.Rules = append(p.Rules, r)
-			out.Rules++
-		}
-	}
 	for _, b := range seed.Badges {
 		if p.Badge(b.ID) == nil {
 			p.Badges = append(p.Badges, b)
 			out.Badges++
+		}
+	}
+	for _, r := range seed.Rules {
+		r.Version = 1
+		cur := p.Find(r.ID)
+		switch {
+		case cur == nil:
+			p.Rules = append(p.Rules, r)
+			out.Rules++
+		case cur.Version == 1:
+			// Settle what an empty field means, as saving does, so only a real difference shows.
+			if err := r.Validate(p); err != nil {
+				return Seeded{}, fmt.Errorf("reward: the seed rule %s is not valid: %w", r.ID, err)
+			}
+			if marshal(*cur) != marshal(r) {
+				r.Version = cur.Version + 1
+				*cur = r
+				out.Corrected++
+			}
 		}
 	}
 	if slices.Equal(p.Levels, firstLevels) {
@@ -135,5 +153,5 @@ func (e *Engine) topUp(ctx context.Context, p *rule.Program, seed rule.Program) 
 		return Seeded{}, err
 	}
 	return out, e.record(ctx, seedBy, "program.seeded", "program/"+p.Slug(), map[string]any{
-		"seedVersion": p.SeedVersion, "version": p.Version, "rules": out.Rules, "badges": out.Badges, "levels": out.Levels, "upline": out.Upline})
+		"seedVersion": p.SeedVersion, "version": p.Version, "rules": out.Rules, "badges": out.Badges, "rulesCorrected": out.Corrected, "levels": out.Levels, "upline": out.Upline})
 }
