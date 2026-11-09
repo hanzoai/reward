@@ -482,7 +482,7 @@ func TestAdminReadsTheSeedVersionAndCannotSetIt(t *testing.T) {
 	r.seeded()
 	var prog rule.View
 	r.json(staff, "GET", admin+"/programs/hanzo-rewards", nil, 200, &prog)
-	if prog.SeedVersion != 1 || prog.Version != 1 {
+	if prog.SeedVersion != 2 || prog.Version != 1 {
 		t.Fatalf("seedVersion %d, version %d", prog.SeedVersion, prog.Version)
 	}
 	// the whole view sent back, with the engine's own fields changed, saves the header and nothing else.
@@ -490,7 +490,7 @@ func TestAdminReadsTheSeedVersionAndCannotSetIt(t *testing.T) {
 		"badges": prog.Badges, "templates": prog.Templates, "seedVersion": 0, "version": 99}
 	var saved rule.View
 	r.json(staff, "PUT", admin+"/programs/hanzo-rewards", body, 200, &saved)
-	if saved.Name != "Renamed" || saved.SeedVersion != 1 || saved.Version != 2 {
+	if saved.Name != "Renamed" || saved.SeedVersion != 2 || saved.Version != 2 {
 		t.Errorf("saved = name %q, seedVersion %d, version %d", saved.Name, saved.SeedVersion, saved.Version)
 	}
 	// a program admin creates is not at any seed's version.

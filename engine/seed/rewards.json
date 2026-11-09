@@ -2,7 +2,7 @@
  "id": "hanzo-rewards",
  "name": "Hanzo Rewards",
  "active": true,
- "seedVersion": 1,
+ "seedVersion": 2,
  "budget": {
   "pointsPerMonth": 0,
   "creditCentsPerMonth": 50000
