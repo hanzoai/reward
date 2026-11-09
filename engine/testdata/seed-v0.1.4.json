@@ -1,0 +1,3057 @@
+{
+ "id": "hanzo-rewards",
+ "name": "Hanzo Rewards",
+ "active": true,
+ "budget": {
+  "pointsPerMonth": 0,
+  "creditCentsPerMonth": 50000
+ },
+ "upline": [
+  10,
+  5,
+  2
+ ],
+ "levels": [
+  {
+   "level": 1,
+   "name": "Hacker",
+   "minLifetimePoints": 0
+  },
+  {
+   "level": 2,
+   "name": "Builder",
+   "minLifetimePoints": 100
+  },
+  {
+   "level": 3,
+   "name": "Shipper",
+   "minLifetimePoints": 500
+  },
+  {
+   "level": 4,
+   "name": "Core",
+   "minLifetimePoints": 2500
+  },
+  {
+   "level": 5,
+   "name": "Legend",
+   "minLifetimePoints": 10000
+  }
+ ],
+ "badges": [
+  {
+   "id": "first-100k",
+   "name": "First 100K",
+   "pillar": "use"
+  },
+  {
+   "id": "million-token-club",
+   "name": "Million Token Club",
+   "pillar": "use"
+  },
+  {
+   "id": "five-million",
+   "name": "Five Million",
+   "pillar": "use"
+  },
+  {
+   "id": "ten-million",
+   "name": "Ten Million",
+   "pillar": "use"
+  },
+  {
+   "id": "century",
+   "name": "Century",
+   "pillar": "use"
+  },
+  {
+   "id": "billionaire",
+   "name": "Billionaire",
+   "pillar": "use"
+  },
+  {
+   "id": "titan",
+   "name": "Titan",
+   "pillar": "use"
+  },
+  {
+   "id": "colossus",
+   "name": "Colossus",
+   "pillar": "use"
+  },
+  {
+   "id": "trillion-club",
+   "name": "Trillion Club",
+   "pillar": "use"
+  },
+  {
+   "id": "first-friend",
+   "name": "First Friend",
+   "pillar": "share"
+  },
+  {
+   "id": "true-advocate",
+   "name": "True Advocate",
+   "pillar": "share"
+  },
+  {
+   "id": "stargazer",
+   "name": "Stargazer",
+   "pillar": "community"
+  },
+  {
+   "id": "follower",
+   "name": "Follower",
+   "pillar": "community"
+  },
+  {
+   "id": "first-merge",
+   "name": "First Merge",
+   "pillar": "contribute"
+  },
+  {
+   "id": "bug-slayer",
+   "name": "Bug Slayer",
+   "pillar": "contribute"
+  },
+  {
+   "id": "documentarian",
+   "name": "Documentarian",
+   "pillar": "contribute"
+  },
+  {
+   "id": "polyglot",
+   "name": "Polyglot",
+   "pillar": "contribute"
+  },
+  {
+   "id": "issue-scout",
+   "name": "Issue Scout",
+   "pillar": "contribute"
+  },
+  {
+   "id": "bounty-hunter",
+   "name": "Bounty Hunter",
+   "pillar": "contribute"
+  },
+  {
+   "id": "try-dev",
+   "name": "Tried Dev",
+   "pillar": "use"
+  },
+  {
+   "id": "try-bot",
+   "name": "Tried Bot",
+   "pillar": "use"
+  },
+  {
+   "id": "try-team",
+   "name": "Tried Team",
+   "pillar": "use"
+  },
+  {
+   "id": "try-desktop",
+   "name": "Tried Desktop",
+   "pillar": "use"
+  },
+  {
+   "id": "try-cli",
+   "name": "Tried CLI",
+   "pillar": "use"
+  },
+  {
+   "id": "try-extension",
+   "name": "Tried Extension",
+   "pillar": "use"
+  },
+  {
+   "id": "try-base",
+   "name": "Tried Base",
+   "pillar": "use"
+  },
+  {
+   "id": "try-commerce",
+   "name": "Tried Commerce",
+   "pillar": "use"
+  },
+  {
+   "id": "try-insights",
+   "name": "Tried Insights",
+   "pillar": "use"
+  },
+  {
+   "id": "try-search",
+   "name": "Tried Search",
+   "pillar": "use"
+  },
+  {
+   "id": "try-memory",
+   "name": "Tried Memory",
+   "pillar": "use"
+  },
+  {
+   "id": "try-machines",
+   "name": "Tried Machines",
+   "pillar": "use"
+  },
+  {
+   "id": "try-koma",
+   "name": "Tried Koma",
+   "pillar": "use"
+  },
+  {
+   "id": "try-iro",
+   "name": "Tried Iro",
+   "pillar": "use"
+  },
+  {
+   "id": "try-mori",
+   "name": "Tried Mori",
+   "pillar": "use"
+  },
+  {
+   "id": "try-oto",
+   "name": "Tried Oto",
+   "pillar": "use"
+  },
+  {
+   "id": "try-koe",
+   "name": "Tried Koe",
+   "pillar": "use"
+  },
+  {
+   "id": "try-uta",
+   "name": "Tried Uta",
+   "pillar": "use"
+  },
+  {
+   "id": "zen-pioneer",
+   "name": "Zen Pioneer",
+   "pillar": "use"
+  },
+  {
+   "id": "enso-navigator",
+   "name": "Enso Navigator",
+   "pillar": "use"
+  },
+  {
+   "id": "kai-strategist",
+   "name": "Kai Strategist",
+   "pillar": "use"
+  },
+  {
+   "id": "first-listing",
+   "name": "First Listing",
+   "pillar": "expert"
+  },
+  {
+   "id": "verified-expert",
+   "name": "Verified Expert",
+   "pillar": "expert"
+  },
+  {
+   "id": "first-engagement-delivered",
+   "name": "First Engagement Delivered",
+   "pillar": "expert"
+  },
+  {
+   "id": "five-jobs-delivered",
+   "name": "Five Jobs Delivered",
+   "pillar": "expert"
+  }
+ ],
+ "templates": [],
+ "rules": [
+  {
+   "id": "tokens-100k",
+   "name": "100K tokens",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "usage.tokens"
+   },
+   "if": [
+    {
+     "field": "tokens",
+     "op": "gte",
+     "value": 100000
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 10
+    },
+    {
+     "type": "badge",
+     "badge": "first-100k"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "tokens-1m",
+   "name": "1M tokens",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "usage.tokens"
+   },
+   "if": [
+    {
+     "field": "tokens",
+     "op": "gte",
+     "value": 1000000
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 20
+    },
+    {
+     "type": "badge",
+     "badge": "million-token-club"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "tokens-5m",
+   "name": "5M tokens",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "usage.tokens"
+   },
+   "if": [
+    {
+     "field": "tokens",
+     "op": "gte",
+     "value": 5000000
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 30
+    },
+    {
+     "type": "badge",
+     "badge": "five-million"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "tokens-10m",
+   "name": "10M tokens",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "usage.tokens"
+   },
+   "if": [
+    {
+     "field": "tokens",
+     "op": "gte",
+     "value": 10000000
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 40
+    },
+    {
+     "type": "badge",
+     "badge": "ten-million"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "tokens-100m",
+   "name": "100M tokens",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "usage.tokens"
+   },
+   "if": [
+    {
+     "field": "tokens",
+     "op": "gte",
+     "value": 100000000
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 75
+    },
+    {
+     "type": "badge",
+     "badge": "century"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "tokens-1b",
+   "name": "1B tokens",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "usage.tokens"
+   },
+   "if": [
+    {
+     "field": "tokens",
+     "op": "gte",
+     "value": 1000000000
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 100
+    },
+    {
+     "type": "badge",
+     "badge": "billionaire"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "tokens-10b",
+   "name": "10B tokens",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "usage.tokens"
+   },
+   "if": [
+    {
+     "field": "tokens",
+     "op": "gte",
+     "value": 10000000000
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 150
+    },
+    {
+     "type": "badge",
+     "badge": "titan"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "tokens-100b",
+   "name": "100B tokens",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "usage.tokens"
+   },
+   "if": [
+    {
+     "field": "tokens",
+     "op": "gte",
+     "value": 100000000000
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 200
+    },
+    {
+     "type": "badge",
+     "badge": "colossus"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "tokens-1t",
+   "name": "1T tokens",
+   "pillar": "use",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "usage.tokens"
+   },
+   "if": [
+    {
+     "field": "tokens",
+     "op": "gte",
+     "value": 1000000000000
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 300
+    },
+    {
+     "type": "badge",
+     "badge": "trillion-club"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "referral-activated",
+   "name": "Referred person activated",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.activated"
+   },
+   "if": [],
+   "then": [
+    {
+     "type": "points",
+     "points": 25
+    },
+    {
+     "type": "badge",
+     "badge": "first-friend"
+    }
+   ],
+   "limits": {
+    "perMonth": 4
+   }
+  },
+  {
+   "id": "referral-retained",
+   "name": "Referred person retained",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.retained"
+   },
+   "if": [],
+   "then": [
+    {
+     "type": "points",
+     "points": 25,
+     "redeemable": true
+    },
+    {
+     "type": "badge",
+     "badge": "true-advocate"
+    }
+   ],
+   "limits": {
+    "perMonth": 4
+   }
+  },
+  {
+   "id": "welcome-bonus",
+   "name": "Welcome bonus",
+   "pillar": "share",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "referral.welcomed"
+   },
+   "if": [],
+   "then": [
+    {
+     "type": "points",
+     "points": 10
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "github-star",
+   "name": "Starred a repository",
+   "pillar": "community",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "github.star"
+   },
+   "if": [],
+   "then": [
+    {
+     "type": "points",
+     "points": 1
+    },
+    {
+     "type": "badge",
+     "badge": "stargazer"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "repo"
+   }
+  },
+  {
+   "id": "github-follow",
+   "name": "Followed on GitHub",
+   "pillar": "community",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "github.follow"
+   },
+   "if": [],
+   "then": [
+    {
+     "type": "points",
+     "points": 1
+    },
+    {
+     "type": "badge",
+     "badge": "follower"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "target"
+   }
+  },
+  {
+   "id": "github-fork",
+   "name": "Forked a repository",
+   "pillar": "contribute",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "github.fork"
+   },
+   "if": [],
+   "then": [
+    {
+     "type": "points",
+     "points": 1
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "repo"
+   }
+  },
+  {
+   "id": "github-badge",
+   "name": "Hanzo badge in a README (each badge counts)",
+   "pillar": "contribute",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "github.badge"
+   },
+   "if": [],
+   "then": [
+    {
+     "type": "points",
+     "points": 10
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "repo+badge"
+   }
+  },
+  {
+   "id": "pr-feature",
+   "name": "Merged pull request",
+   "pillar": "contribute",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "github.pr.merged"
+   },
+   "if": [
+    {
+     "field": "kind",
+     "op": "eq",
+     "value": "feature"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 50,
+     "redeemable": true
+    },
+    {
+     "type": "badge",
+     "badge": "first-merge"
+    }
+   ],
+   "limits": {
+    "perDay": 6
+   }
+  },
+  {
+   "id": "pr-fix",
+   "name": "Merged bug fix",
+   "pillar": "contribute",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "github.pr.merged"
+   },
+   "if": [
+    {
+     "field": "kind",
+     "op": "eq",
+     "value": "fix"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 75,
+     "redeemable": true
+    },
+    {
+     "type": "badge",
+     "badge": "first-merge"
+    },
+    {
+     "type": "badge",
+     "badge": "bug-slayer"
+    }
+   ],
+   "limits": {
+    "perDay": 4
+   }
+  },
+  {
+   "id": "pr-docs",
+   "name": "Merged docs",
+   "pillar": "contribute",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "github.pr.merged"
+   },
+   "if": [
+    {
+     "field": "kind",
+     "op": "eq",
+     "value": "docs"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 30,
+     "redeemable": true
+    },
+    {
+     "type": "badge",
+     "badge": "first-merge"
+    },
+    {
+     "type": "badge",
+     "badge": "documentarian"
+    }
+   ],
+   "limits": {
+    "perDay": 10
+   }
+  },
+  {
+   "id": "pr-translation",
+   "name": "Merged translation",
+   "pillar": "contribute",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "github.pr.merged"
+   },
+   "if": [
+    {
+     "field": "kind",
+     "op": "eq",
+     "value": "translation"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 30,
+     "redeemable": true
+    },
+    {
+     "type": "badge",
+     "badge": "first-merge"
+    },
+    {
+     "type": "badge",
+     "badge": "polyglot"
+    }
+   ],
+   "limits": {
+    "perDay": 10
+   }
+  },
+  {
+   "id": "issue-accepted",
+   "name": "Accepted issue",
+   "pillar": "contribute",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "github.issue.accepted"
+   },
+   "if": [],
+   "then": [
+    {
+     "type": "points",
+     "points": 10,
+     "redeemable": true
+    },
+    {
+     "type": "badge",
+     "badge": "issue-scout"
+    }
+   ],
+   "limits": {
+    "perDay": 30
+   }
+  },
+  {
+   "id": "bounty-starter",
+   "name": "Bounty completed: starter",
+   "pillar": "contribute",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "bounty.completed"
+   },
+   "if": [
+    {
+     "field": "tier",
+     "op": "eq",
+     "value": "starter"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 75,
+     "redeemable": true
+    },
+    {
+     "type": "badge",
+     "badge": "bounty-hunter"
+    }
+   ],
+   "limits": {}
+  },
+  {
+   "id": "bounty-standard",
+   "name": "Bounty completed: standard",
+   "pillar": "contribute",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "bounty.completed"
+   },
+   "if": [
+    {
+     "field": "tier",
+     "op": "eq",
+     "value": "standard"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 150,
+     "redeemable": true
+    },
+    {
+     "type": "badge",
+     "badge": "bounty-hunter"
+    }
+   ],
+   "limits": {}
+  },
+  {
+   "id": "bounty-advanced",
+   "name": "Bounty completed: advanced",
+   "pillar": "contribute",
+   "active": true,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "bounty.completed"
+   },
+   "if": [
+    {
+     "field": "tier",
+     "op": "eq",
+     "value": "advanced"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 300,
+     "redeemable": true
+    },
+    {
+     "type": "badge",
+     "badge": "bounty-hunter"
+    }
+   ],
+   "limits": {}
+  },
+  {
+   "id": "try-dev",
+   "name": "Tried Dev",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "dev"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-dev"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-bot",
+   "name": "Tried Bot",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "bot"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-bot"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-team",
+   "name": "Tried Team",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "team"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-team"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-desktop",
+   "name": "Tried Desktop",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "desktop"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-desktop"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-cli",
+   "name": "Tried CLI",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "cli"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-cli"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-extension",
+   "name": "Tried Extension",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "extension"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-extension"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-base",
+   "name": "Tried Base",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "base"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-base"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-commerce",
+   "name": "Tried Commerce",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "commerce"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-commerce"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-insights",
+   "name": "Tried Insights",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "insights"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-insights"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-search",
+   "name": "Tried Search",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "search"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-search"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-memory",
+   "name": "Tried Memory",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "memory"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-memory"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-machines",
+   "name": "Tried Machines",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "machines"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-machines"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-koma",
+   "name": "Tried Koma",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "koma"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-koma"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-iro",
+   "name": "Tried Iro",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "iro"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-iro"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-mori",
+   "name": "Tried Mori",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "mori"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-mori"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-oto",
+   "name": "Tried Oto",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "oto"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-oto"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-koe",
+   "name": "Tried Koe",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "koe"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-koe"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-uta",
+   "name": "Tried Uta",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "product.used"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "uta"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "try-uta"
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "product"
+   }
+  },
+  {
+   "id": "try-zen",
+   "name": "Tried Zen",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "model.used"
+   },
+   "if": [
+    {
+     "field": "model",
+     "op": "contains",
+     "value": "zen"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "zen-pioneer"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "try-enso",
+   "name": "Tried Enso",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "model.used"
+   },
+   "if": [
+    {
+     "field": "model",
+     "op": "contains",
+     "value": "enso"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "enso-navigator"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "try-kai",
+   "name": "Tried Kai",
+   "pillar": "use",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "model.used"
+   },
+   "if": [
+    {
+     "field": "model",
+     "op": "contains",
+     "value": "kai"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "kai-strategist"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "post-dev",
+   "name": "Post about Dev",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "dev"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-bot",
+   "name": "Post about Bot",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "bot"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-team",
+   "name": "Post about Team",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "team"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-desktop",
+   "name": "Post about Desktop",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "desktop"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-cli",
+   "name": "Post about CLI",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "cli"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-extension",
+   "name": "Post about Extension",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "extension"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-base",
+   "name": "Post about Base",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "base"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-commerce",
+   "name": "Post about Commerce",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "commerce"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-insights",
+   "name": "Post about Insights",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "insights"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-search",
+   "name": "Post about Search",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "search"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-memory",
+   "name": "Post about Memory",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "memory"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-machines",
+   "name": "Post about Machines",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "machines"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-koma",
+   "name": "Post about Koma",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "koma"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-iro",
+   "name": "Post about Iro",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "iro"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-mori",
+   "name": "Post about Mori",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "mori"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-oto",
+   "name": "Post about Oto",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "oto"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-koe",
+   "name": "Post about Koe",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "koe"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-uta",
+   "name": "Post about Uta",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "uta"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-zen",
+   "name": "Post about Zen",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "model",
+     "op": "contains",
+     "value": "zen"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-enso",
+   "name": "Post about Enso",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "model",
+     "op": "contains",
+     "value": "enso"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "post-kai",
+   "name": "Post about Kai",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "if": [
+    {
+     "field": "model",
+     "op": "contains",
+     "value": "kai"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "url"
+   }
+  },
+  {
+   "id": "weekly-share",
+   "name": "Weekly share",
+   "pillar": "share",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "social.post.verified"
+   },
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "network+week"
+   }
+  },
+  {
+   "id": "video-cli",
+   "name": "Demo video: CLI",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.video"
+   },
+   "if": [
+    {
+     "field": "app",
+     "op": "eq",
+     "value": "cli"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "video-desktop",
+   "name": "Demo video: Desktop",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.video"
+   },
+   "if": [
+    {
+     "field": "app",
+     "op": "eq",
+     "value": "desktop"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "video-mobile",
+   "name": "Demo video: Mobile",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.video"
+   },
+   "if": [
+    {
+     "field": "app",
+     "op": "eq",
+     "value": "mobile"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-dev",
+   "name": "Test report: Dev",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "dev"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-bot",
+   "name": "Test report: Bot",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "bot"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-team",
+   "name": "Test report: Team",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "team"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-desktop",
+   "name": "Test report: Desktop",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "desktop"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-cli",
+   "name": "Test report: CLI",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "cli"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-extension",
+   "name": "Test report: Extension",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "extension"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-base",
+   "name": "Test report: Base",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "base"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-commerce",
+   "name": "Test report: Commerce",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "commerce"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-insights",
+   "name": "Test report: Insights",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "insights"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-search",
+   "name": "Test report: Search",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "search"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-memory",
+   "name": "Test report: Memory",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "memory"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-machines",
+   "name": "Test report: Machines",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "machines"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": false
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-koma",
+   "name": "Test report: Koma (beta)",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "koma"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-iro",
+   "name": "Test report: Iro (beta)",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "iro"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-mori",
+   "name": "Test report: Mori (beta)",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "mori"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-oto",
+   "name": "Test report: Oto (beta)",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "oto"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-koe",
+   "name": "Test report: Koe (beta)",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "koe"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "test-uta",
+   "name": "Test report: Uta (beta)",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "submission.test"
+   },
+   "if": [
+    {
+     "field": "product",
+     "op": "eq",
+     "value": "uta"
+    },
+    {
+     "field": "beta",
+     "op": "eq",
+     "value": true
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "benchmark-added",
+   "name": "Benchmark added",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "benchmark.added"
+   },
+   "if": [],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {
+    "once": "subject+key",
+    "keyField": "pr"
+   }
+  },
+  {
+   "id": "pr-tests",
+   "name": "Merged tests",
+   "pillar": "contribute",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "github.pr.merged"
+   },
+   "if": [
+    {
+     "field": "kind",
+     "op": "eq",
+     "value": "tests"
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    }
+   ],
+   "limits": {}
+  },
+  {
+   "id": "expert-first-listing",
+   "name": "First Listing",
+   "pillar": "expert",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "expert.listed"
+   },
+   "if": [],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "first-listing"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "expert-verified-expert",
+   "name": "Verified Expert",
+   "pillar": "expert",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "expert.verified"
+   },
+   "if": [],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "verified-expert"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "expert-first-engagement-delivered",
+   "name": "First Engagement Delivered",
+   "pillar": "expert",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "expert.job.delivered"
+   },
+   "if": [],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "first-engagement-delivered"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  },
+  {
+   "id": "expert-five-jobs-delivered",
+   "name": "Five Jobs Delivered",
+   "pillar": "expert",
+   "active": false,
+   "version": 1,
+   "approval": "manual",
+   "when": {
+    "event": "expert.job.delivered"
+   },
+   "if": [
+    {
+     "field": "rating",
+     "op": "gte",
+     "value": 4.5
+    }
+   ],
+   "then": [
+    {
+     "type": "points",
+     "points": 0
+    },
+    {
+     "type": "badge",
+     "badge": "five-jobs-delivered"
+    }
+   ],
+   "limits": {
+    "once": "subject"
+   }
+  }
+ ]
+}

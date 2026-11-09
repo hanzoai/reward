@@ -404,6 +404,93 @@ func TestProgramsAndRulesAreEditedOverHTTP(t *testing.T) {
 	}
 }
 
+func TestTheFoundingCutoffRoundTripsThroughTheAdminProgram(t *testing.T) {
+	r := newRig(t)
+	r.seeded()
+	cutoff := func(path string) (string, bool) {
+		t.Helper()
+		var doc map[string]any
+		r.json(staff, "GET", path, nil, 200, &doc)
+		v, ok := doc["foundingCutoff"]
+		s, _ := v.(string)
+		return s, ok
+	}
+	// the owner sets the date: the seed has none, and says so.
+	if got, ok := cutoff(admin + "/programs/hanzo-rewards"); !ok || got != "" {
+		t.Fatalf("seeded cutoff = %q (present %v)", got, ok)
+	}
+	var prog rule.View
+	r.json(staff, "GET", admin+"/programs/hanzo-rewards", nil, 200, &prog)
+	body := func(cutoff string) map[string]any {
+		return map[string]any{"name": prog.Name, "active": prog.Active, "budget": prog.Budget, "upline": prog.Upline,
+			"foundingCutoff": cutoff, "levels": prog.Levels, "badges": prog.Badges, "templates": prog.Templates}
+	}
+	for _, set := range []string{"2026-01-01", "2026-01-01T00:00:00Z", "2026-03-04T05:06:07+02:00"} {
+		var saved rule.View
+		r.json(staff, "PUT", admin+"/programs/hanzo-rewards", body(set), 200, &saved)
+		if saved.FoundingCutoff != set {
+			t.Errorf("PUT %q answered %q", set, saved.FoundingCutoff)
+		}
+		if got, _ := cutoff(admin + "/programs/hanzo-rewards"); got != set {
+			t.Errorf("GET after PUT %q = %q", set, got)
+		}
+		var all struct {
+			Programs []rule.View `json:"programs"`
+		}
+		r.json(staff, "GET", admin+"/programs", nil, 200, &all)
+		if len(all.Programs) != 1 || all.Programs[0].FoundingCutoff != set {
+			t.Errorf("the list after PUT %q = %+v", set, all.Programs)
+		}
+	}
+	// the rules and levels came through untouched.
+	r.json(staff, "GET", admin+"/programs/hanzo-rewards", nil, 200, &prog)
+	if len(prog.Levels) != 100 || len(prog.Rules) < 90 {
+		t.Errorf("after the PUTs: %d levels, %d rules", len(prog.Levels), len(prog.Rules))
+	}
+	// an unparseable date is a 400 and changes nothing.
+	for _, bad := range []string{"soon", "2026-02-30", "01/02/2026", "2026-01-01 10:00", "2026"} {
+		r.json(staff, "PUT", admin+"/programs/hanzo-rewards", body(bad), 400, nil)
+	}
+	if got, _ := cutoff(admin + "/programs/hanzo-rewards"); got != "2026-03-04T05:06:07+02:00" {
+		t.Errorf("a refused PUT changed the cutoff to %q", got)
+	}
+	// empty is no cutoff.
+	r.json(staff, "PUT", admin+"/programs/hanzo-rewards", body(""), 200, nil)
+	if got, ok := cutoff(admin + "/programs/hanzo-rewards"); !ok || got != "" {
+		t.Errorf("cleared cutoff = %q (present %v)", got, ok)
+	}
+	// a new program takes one at creation, and refuses a bad one.
+	r.json(staff, "POST", admin+"/programs", map[string]any{"id": "mini", "name": "Mini", "foundingCutoff": "nonsense"}, 400, nil)
+	r.json(staff, "POST", admin+"/programs", map[string]any{"id": "mini", "name": "Mini", "foundingCutoff": "2027-01-01"}, 201, nil)
+	if got, _ := cutoff(admin + "/programs/mini"); got != "2027-01-01" {
+		t.Errorf("created cutoff = %q", got)
+	}
+}
+
+func TestAdminReadsTheSeedVersionAndCannotSetIt(t *testing.T) {
+	r := newRig(t)
+	r.seeded()
+	var prog rule.View
+	r.json(staff, "GET", admin+"/programs/hanzo-rewards", nil, 200, &prog)
+	if prog.SeedVersion != 1 || prog.Version != 1 {
+		t.Fatalf("seedVersion %d, version %d", prog.SeedVersion, prog.Version)
+	}
+	// the whole view sent back, with the engine's own fields changed, saves the header and nothing else.
+	body := map[string]any{"name": "Renamed", "active": true, "budget": prog.Budget, "upline": prog.Upline, "levels": prog.Levels,
+		"badges": prog.Badges, "templates": prog.Templates, "seedVersion": 0, "version": 99}
+	var saved rule.View
+	r.json(staff, "PUT", admin+"/programs/hanzo-rewards", body, 200, &saved)
+	if saved.Name != "Renamed" || saved.SeedVersion != 1 || saved.Version != 2 {
+		t.Errorf("saved = name %q, seedVersion %d, version %d", saved.Name, saved.SeedVersion, saved.Version)
+	}
+	// a program admin creates is not at any seed's version.
+	var made rule.View
+	r.json(staff, "POST", admin+"/programs", map[string]any{"id": "mini", "name": "Mini", "seedVersion": 1}, 201, &made)
+	if made.SeedVersion != 0 {
+		t.Errorf("created seedVersion = %d", made.SeedVersion)
+	}
+}
+
 func TestBackfillOverHTTPIsAdminOnlyAndIdempotent(t *testing.T) {
 	r := newRig(t)
 	r.seeded()
@@ -430,10 +517,11 @@ func TestBackfillOverHTTPIsAdminOnlyAndIdempotent(t *testing.T) {
 			Level      struct {
 				Name string `json:"name"`
 			} `json:"level"`
+			Band string `json:"band"`
 		} `json:"programs"`
 	}
 	r.json(alice, "GET", pub+"/me", nil, 200, &me)
-	if p := me.Programs[0]; p.Lifetime != 122 || p.Redeemable != 0 || p.Level.Name != "Builder" {
+	if p := me.Programs[0]; p.Lifetime != 122 || p.Redeemable != 0 || p.Level.Name != "Photon 3" || p.Band != "Photon" {
 		t.Errorf("me = %+v", p)
 	}
 	r.json(staff, "POST", admin+"/programs/hanzo-rewards/backfill", map[string]any{"rows": []map[string]any{{"subject": "a", "source": "vibes", "points": 1}}}, 400, nil)

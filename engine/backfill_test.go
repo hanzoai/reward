@@ -109,7 +109,7 @@ func TestLegacyPointsAreNeverRedeemable(t *testing.T) {
 
 func TestLevelsAreComputedIncludingLegacy(t *testing.T) {
 	r := newRig(t, nil, star("s", pts(10, true)))
-	if a := r.account("alice"); a.Level.Name != "Hacker" {
+	if a := r.account("alice"); a.Level.Name != "Hacker" || a.Level.Level != 1 || a.Band != "Hacker" {
 		t.Fatalf("start: %+v", a)
 	}
 	if _, err := r.e.Backfill(r.ctx, r.slug, []ledger.Past{{Subject: "alice", Source: "usage.tokens", Points: 95}}, "z"); err != nil {

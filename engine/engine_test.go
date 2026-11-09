@@ -537,8 +537,8 @@ func TestLevelFollowsLifetimePoints(t *testing.T) {
 	}{{0, "Hacker", 100}, {99, "Hacker", 100}, {100, "Builder", 500}, {499, "Builder", 500}, {500, "Shipper", 0}, {10_000, "Shipper", 0}}
 	for _, c := range cases {
 		l, next := p.LevelOf(c.points)
-		if l.Name != c.level {
-			t.Errorf("%d points: level %s, want %s", c.points, l.Name, c.level)
+		if l.Name != c.level || l.Band != c.level {
+			t.Errorf("%d points: level %s in band %s, want %s in the band of its own name", c.points, l.Name, l.Band, c.level)
 		}
 		if (next == nil) != (c.next == 0) || (next != nil && next.MinLifetimePoints != c.next) {
 			t.Errorf("%d points: next %+v, want %d", c.points, next, c.next)
@@ -780,6 +780,53 @@ func TestProgramHeaderIsCheckedAndRulesAreKept(t *testing.T) {
 	}
 	if again, err := r.e.SaveProgram(r.ctx, r.slug, in, "tester"); err != nil || again.Version != 2 {
 		t.Errorf("saving the same header raised the version: %v %+v", err, again)
+	}
+}
+
+func TestTheFoundingCutoffIsSavedWithTheProgramAndMustParse(t *testing.T) {
+	r := newRig(t, func(p *rule.Program) { p.FoundingCutoff = "2026-01-01" })
+	cur, err := r.e.Program(r.ctx, r.slug)
+	if err != nil || cur.FoundingCutoff != "2026-01-01" || cur.View().FoundingCutoff != "2026-01-01" {
+		t.Fatalf("created with a cutoff: %v %+v", err, cur)
+	}
+	if at, err := cur.Cutoff(); err != nil || !at.Equal(time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC)) {
+		t.Errorf("cutoff = %v %v", at, err)
+	}
+	header := func(cutoff string) rule.Program {
+		return rule.Program{Name: cur.Name, Active: cur.Active, Levels: cur.Levels, Badges: cur.Badges, Templates: cur.Templates, FoundingCutoff: cutoff}
+	}
+	// a change is a save: a new version and a trail row; the same value again is neither.
+	got, err := r.e.SaveProgram(r.ctx, r.slug, header(" 2026-06-30T12:00:00Z "), "tester")
+	if err != nil || got.FoundingCutoff != "2026-06-30T12:00:00Z" || got.Version != 2 {
+		t.Fatalf("a timestamp: %v %+v", err, got)
+	}
+	if again, err := r.e.SaveProgram(r.ctx, r.slug, header("2026-06-30T12:00:00Z"), "tester"); err != nil || again.Version != 2 {
+		t.Errorf("the same cutoff raised the version: %v %+v", err, again)
+	}
+	back, _ := r.e.Program(r.ctx, r.slug)
+	if back.FoundingCutoff != "2026-06-30T12:00:00Z" {
+		t.Errorf("stored = %q", back.FoundingCutoff)
+	}
+	// an unparseable date is refused and leaves the stored one alone.
+	for _, bad := range []string{"soon", "2026-02-30", "06/30/2026", "2026"} {
+		if _, err := r.e.SaveProgram(r.ctx, r.slug, header(bad), "tester"); !refuse.Is(err) {
+			t.Errorf("%q: err = %v, want a refusal", bad, err)
+		}
+	}
+	if back, _ = r.e.Program(r.ctx, r.slug); back.FoundingCutoff != "2026-06-30T12:00:00Z" || back.Version != 2 {
+		t.Errorf("a refused save changed the program: %+v", back)
+	}
+	// empty is no cutoff.
+	cleared, err := r.e.SaveProgram(r.ctx, r.slug, header(""), "tester")
+	if err != nil || cleared.FoundingCutoff != "" || cleared.Version != 3 {
+		t.Errorf("empty: %v %+v", err, cleared)
+	}
+	if at, err := cleared.Cutoff(); err != nil || !at.IsZero() {
+		t.Errorf("no cutoff = %v %v", at, err)
+	}
+	// a program created with a bad one is refused too.
+	if _, err := r.e.SaveProgram(r.ctx, "other", rule.Program{Name: "Other", FoundingCutoff: "never"}, "tester"); !refuse.Is(err) {
+		t.Errorf("creating with a bad cutoff: %v", err)
 	}
 }
 

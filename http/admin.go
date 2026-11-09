@@ -15,20 +15,21 @@ import (
 
 // header is a program without its rules: the part a program PUT changes.
 type header struct {
-	ID        string          `json:"id"`
-	Name      string          `json:"name"`
-	Active    bool            `json:"active"`
-	Budget    rule.Budget     `json:"budget"`
-	Upline    []int           `json:"upline"`
-	Levels    []rule.Level    `json:"levels"`
-	Badges    []rule.Badge    `json:"badges"`
-	Templates []rule.Template `json:"templates"`
-	Rules     []rule.Rule     `json:"rules"`
+	ID             string          `json:"id"`
+	Name           string          `json:"name"`
+	Active         bool            `json:"active"`
+	Budget         rule.Budget     `json:"budget"`
+	Upline         []int           `json:"upline"`
+	FoundingCutoff string          `json:"foundingCutoff"`
+	Levels         []rule.Level    `json:"levels"`
+	Badges         []rule.Badge    `json:"badges"`
+	Templates      []rule.Template `json:"templates"`
+	Rules          []rule.Rule     `json:"rules"`
 }
 
 func (b header) program() rule.Program {
 	var p rule.Program
-	p.Name, p.Active, p.Budget, p.Upline, p.Levels, p.Badges, p.Templates, p.Rules = b.Name, b.Active, b.Budget, b.Upline, b.Levels, b.Badges, b.Templates, b.Rules
+	p.Name, p.Active, p.Budget, p.Upline, p.FoundingCutoff, p.Levels, p.Badges, p.Templates, p.Rules = b.Name, b.Active, b.Budget, b.Upline, b.FoundingCutoff, b.Levels, b.Badges, b.Templates, b.Rules
 	return p
 }
 
@@ -84,8 +85,8 @@ func (h handlers) createProgram(c *zip.Ctx) error {
 }
 
 // saveProgram changes a program's name, whether it is active, its budget, upline,
-// levels, badges and templates. Its rules are kept as stored; they change one at a time at
-// .../rules/:rule. SuperAdmin only.
+// founding cutoff, levels, badges and templates. Its rules are kept as stored; they
+// change one at a time at .../rules/:rule. SuperAdmin only.
 func (h handlers) saveProgram(c *zip.Ctx) error {
 	w, ok := platform(c)
 	if !ok {

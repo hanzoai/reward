@@ -12,7 +12,7 @@ and nothing else of it.
 |---|---|
 | `refuse` | the one error for input the engine will not take (HTTP 400) |
 | `catalog` | the typed events a rule may read, under five pillars (use, share, community, contribute, expert); `Event` and its validation |
-| `rule` | `Rule`, `Condition`, `Action`, `Limits`; `Program` (rules, budget, upline, levels, badges, templates) |
+| `rule` | `Rule`, `Condition`, `Action`, `Limits`; `Program` (rules, budget, upline, founding cutoff, levels, badges, templates) |
 | `claim` | `Claim` and `Step`; `Fold` turns steps into a status |
 | `ledger` | `Entry` (the append-only ledger), `Standing` (balances, level, badges), `Trail` (staff acts), `Past` (legacy backfill rows) |
 | `sponsor` | `Link`: who brought a member in, one per member |
@@ -85,9 +85,13 @@ built); the rest can. Rejected and reversed claims free their limits and budget.
   `subject` or `subject+key` (with `keyField`); `perDay`/`perMonth` are UTC calendar
   day/month counts of claims, not points.
 - Program: `budget{pointsPerMonth, creditCentsPerMonth}` (0 = no bound), `upline`
-  (see Upline), `levels` (Hacker 0, Builder 100, Shipper 500, Core 2500, Legend 10000
-  in the seed), `badges` (each with a pillar and a rarity, common by default),
-  `templates`.
+  (see Upline), `foundingCutoff` (see Founding cutoff), `levels` (see Levels; 100 in
+  bands of ten in the seed), `badges` (each with a pillar and a rarity, common by
+  default; the rarity is written empty for common), `templates`.
+- A rule may be badge-only: its `then` is one `badge` action and no `points` action
+  (the tenure, streak and referral milestone rules of the seed). An approved claim
+  of it writes the badge row and no points row, pays no upline and counts nothing
+  toward the budget.
 - **Pillar** is on every rule (defaults to its event's) and every badge.
 
 ## Catalog
@@ -99,6 +103,17 @@ with `once: subject`. `model.used.model` is the canonical id; aliases never arri
 `github.fork {repo, forker}` and `github.badge {repo, owner, badge: profile|built|rank|deploy}` are
 contribute events; cloud emits `github.badge` only after its verifier confirmed the
 repo is public, owned by the subject's linked GitHub identity, and carries the badge.
+
+Five events say a count was reached; none carries evidence, and the host emits each
+when its own count crosses the number, so a rule is `if <field> eq N`:
+
+| Event | Pillar | Fields | Is |
+|---|---|---|---|
+| `tenure.reached` | use | `months` (whole) | a person's account reached that many months since first sign-up |
+| `streak.reached` | use | `days` (whole) | a person was active on that many consecutive days |
+| `founder.eligible` | community | `reason` (choice `beta`, `alpha`, `early`) | a person qualifies as a Founding Developer (see Founding cutoff) |
+| `referral.network` | share | `referee` (text) | the subject is the sponsor of the person who made a referral (depth 2); `referee` names the referred org |
+| `referral.milestone` | share | `count` (whole) | the subject's count of activated referrals reached a multiple of 5 |
 
 ## Evidence
 
@@ -129,8 +144,8 @@ person welcoming themselves.
 
 ## Seed (`engine/seed/rewards.json`, program `hanzo-rewards`)
 
-Created once on first mount (`Seed`), never overwritten: after that admin owns it.
-Active rules are only the values in the owner-approved 2026-10-26 spec plus the owner's
+Created once on first mount (`Seed`), never overwritten: after that admin owns it, except
+for the top-up below. Active rules are only the values in the owner-approved 2026-10-26 spec plus the owner's
 later values; everything else is inactive at 0 points. All are manual.
 
 - Spec: token milestones 100K +10, 1M +20, 5M +30, 10M +40, 100M +75, 1B +100, 10B
@@ -152,7 +167,91 @@ later values; everything else is inactive at 0 points. All are manual.
 - Known gap: "five jobs delivered" and "try 3 / 5 / 10 / 25 models" are counts over
   many events; `Limits` cannot count. The seed rule `expert-five-jobs-delivered` fires
   on a delivered job rated 4.5 or more, once per subject; the emitter must send it
-  on the fifth. Core and Legend also need non-referral activity (spec); not modeled.
+  on the fifth.
+
+- The owner's later tenure, streak, founder and referral rules are the one exception to
+  "everything else is inactive at 0": they are active, manual, badge only or +1. Each
+  is `once: subject+key` with its keyField named (so a number is earned once), except
+  `founding-developer`:
+  - Tenure, `if months eq N` (pillar use, badge only): One Month 1 (common), Six Months 6
+    (uncommon), Yearling 12 (rare), Two Years 24 (epic), Three Years 36 (legendary);
+    rule ids `tenure-1` ... `tenure-36`.
+  - Streak, `if days eq N` (use, badge only): Week Streak 7 (common), Month Streak 30
+    (rare), Hundred Days 100 (epic); `streak-7`, `streak-30`, `streak-100`.
+  - `founding-developer`: on `founder.eligible`, the Founding Developer badge (legendary,
+    community), `once: subject` whatever the reason.
+  - `referral-network`: on `referral.network`, +1 point (not redeemable), once per
+    `referee`; a second referee is a second +1 (share).
+  - Referral milestones, `if count eq N` (share, badge only), ids `referral-milestone-N`:
+    5 Spark and 10 Signal (common), 15 Beacon and 20 Current (uncommon), 25 Catalyst and
+    30 Amplifier (rare), 35 Orbit, 40 Constellation and 45 Nova (epic), 50 Supernova
+    (legendary), then Cosmos I to Cosmos X (legendary) at 100, 150 ... 550. Badge ids are
+    the slugs of the names (`spark`, `cosmos-i`). The badge art comes later; the emblem
+    renderer keeps its default look for them.
+  The seed test lists them by id (`counted` in `engine/seed_test.go`) and the engine test
+  `engine/seed_events_test.go` sends each one an event.
+
+### Seed top-up
+
+The seed has its own `seedVersion` (1 today); a program has `SeedVersion` (json
+`seedVersion`, set by the engine only: admin PUT and POST bodies ignore it, it is not part of
+the header). A program the first seed made (v0.1.4 and before) has 0. `Seed` runs on every
+mount; when the stored program's `SeedVersion` is below the embedded one it tops the program
+up, once, and returns `Seeded{Created, Rules, Badges, Levels, Upline}` (Mount logs the counts):
+
+- every seed rule whose id is absent is appended at version 1, exactly as seeded, and every
+  seed badge whose id is absent is appended. A rule or badge that exists is never altered,
+  deactivated or removed, whatever its state. A rule staff deleted comes back when its id is
+  in the seed: an absent id cannot be told from one never added.
+- `levels` is replaced with the seed's only if the stored table is still exactly the first
+  seed's five levels (`firstLevels` in `engine/seed.go`: Hacker 0, Builder 100, Shipper 500,
+  Core 2500, Legend 10000, no band). Any other table is staff's and stays.
+- `upline` is set from the seed only if the stored one is empty; a stored one stays.
+- `foundingCutoff`, the budget, the name and the templates are not touched.
+
+Then `Version` rises, `SeedVersion` becomes the seed's, and one `program.seeded` trail record
+(actor `seed`) names the counts and whether levels and upline were set. A program already at
+the seed's version is untouched, so a second mount does nothing. The program is read, changed
+and written in one pass with ids checked against the document being written: two replicas
+mounting together each write a whole document with every id once (a staff edit made between
+that read and write is lost, as with any last-save-wins admin save); a top-up that fails
+before its write leaves `SeedVersion` behind and the next mount repeats it. A fresh store
+is created at the seed's version, with the `program.created` record and no `program.seeded`.
+To ship more seed content later, add it and raise the embedded `seedVersion`.
+The test `engine/testdata/seed-v0.1.4.json` is the first seed, from `git show
+v0.1.4:engine/seed/rewards.json`; v0.1.4 and v0.1.5 seeded the same document.
+
+## Levels
+
+`Program.Levels` is the table of standings: `{level, name, band, minLifetimePoints}`. The
+numbers run in order from 0 or from 1 (a program written before bands starts at 1 and
+keeps working); the first level starts at 0 lifetime points and each next one above the
+one before. `band` is the named run of levels a level belongs to; empty means its `name`,
+settled when a level is read (`Program.LevelOf`), never written into the table.
+
+The seed has 100 levels, 0 to 99: level n needs `10*n*n` lifetime points (0, 10, 40 ...
+1,000 at 10, 25,000 at 50, 98,010 at 99). Bands of ten: 0-9 Photon, 10-19 Wave, 20-29
+Focus, 30-39 Flare, 40-49 Comet, 50-59 Pulsar, 60-69 Nebula, 70-79 Quasar, 80-89
+Magnetar, 90-99 Singularity. A level's `name` is `<Band> <n>` (`Photon 0`, `Flare 37`),
+its `band` is `<Band>`. 999 points is level 9 `Photon 9`; 1,000 is level 10 `Wave 10`.
+Admin edits the table with the rest of the program; nothing about bands is special there.
+A program already stored keeps its table, unless it is still the first seed's five levels,
+which the top-up replaces (see Seed top-up); a table staff changed stays.
+
+`GET /v1/reward/me` returns per program `level` (`{level, name, band, minLifetimePoints}`),
+`next` (the same shape) and, beside them, `band` (the level's). The public profile returns
+`level` (the number), `levelName` and `band`. The README badge draws the level's name only.
+
+## Founding cutoff
+
+`Program.FoundingCutoff` (`foundingCutoff` in the program body) is the date a Founding
+Developer signed up before: an RFC 3339 timestamp (`2026-01-01T00:00:00Z`) or a date
+(`2026-01-01`, the start of that day in UTC); empty is no cutoff. It is edited in admin
+with the program header (a program PUT or POST carries it; a PUT that leaves it out
+clears it, like the other header fields) and refused with 400 when it does not parse.
+The seed sets none: the owner picks the date. The engine decides nothing by it; the host
+reads it with `Engine.Program` (`Program.Cutoff()` parses it) when it decides to emit
+`founder.eligible`.
 
 ## Upline
 
@@ -204,7 +303,7 @@ referred org with spend, +1 per star, +1 per follow, +1 per fork, bounty points.
 ## Profile, explore, badge
 
 `profile` is private until its owner turns it on (`PUT /v1/reward/me/profile`). The
-public view (`GET /v1/reward/profile/:handle`) is level, level name, lifetime points,
+public view (`GET /v1/reward/profile/:handle`) is level, level name, band, lifetime points,
 badges `{id, name, pillar, rarity, earnedAt}`, claim counts per pillar, links (https
 only). Never an email, org, subject id or redeemable balance; a private profile and an
 unknown handle are the same 404. Handles are unique by the conditional insert of an
@@ -251,7 +350,7 @@ Public/self under `/v1/reward`, admin under `/v1/admin/reward` (cloud's conventi
 GET  /v1/reward/health
 GET  /v1/reward/catalog                       public
 POST /v1/reward/events                        platform: ingest
-GET  /v1/reward/me                            caller (balances, level, badges, network)
+GET  /v1/reward/me                            caller (balances, level, band, badges, network)
 GET  /v1/reward/me/claims                     caller
 GET  /v1/reward/me/explore                    caller
 GET|PUT /v1/reward/me/profile                 caller

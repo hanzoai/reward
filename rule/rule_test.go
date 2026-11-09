@@ -2,6 +2,7 @@ package rule
 
 import (
 	"testing"
+	"time"
 
 	"github.com/hanzoai/reward/catalog"
 	"github.com/hanzoai/reward/refuse"
@@ -128,5 +129,86 @@ func TestEveryRuleAndBadgeHasAPillarAndTheVocabularyIsComplete(t *testing.T) {
 	p.Badges[0].Rarity = Epic
 	if err := p.Validate(); err != nil {
 		t.Errorf("a good badge: %v", err)
+	}
+}
+
+func TestLevelsAreNumberedFromZeroOrOneInOrder(t *testing.T) {
+	levels := func(first int, mins ...int64) []Level {
+		var out []Level
+		for i, m := range mins {
+			out = append(out, Level{Level: first + i, Name: "L", MinLifetimePoints: m})
+		}
+		return out
+	}
+	for name, l := range map[string][]Level{
+		"none":                  nil,
+		"from 1":                levels(1, 0, 100, 500),
+		"from 0":                levels(0, 0, 10, 40),
+		"a single level from 0": levels(0, 0),
+	} {
+		p := &Program{Name: "x", Levels: l}
+		p.SetId(ProgramID("x"))
+		if err := p.Validate(); err != nil {
+			t.Errorf("%s: %v", name, err)
+		}
+	}
+	for name, l := range map[string][]Level{
+		"from 2":            levels(2, 0, 100),
+		"from -1":           levels(-1, 0, 100),
+		"a gap":             {{Level: 0, Name: "L"}, {Level: 2, Name: "L", MinLifetimePoints: 10}},
+		"repeated":          {{Level: 0, Name: "L"}, {Level: 0, Name: "L", MinLifetimePoints: 10}},
+		"the first above 0": levels(0, 5, 10),
+		"not rising":        levels(0, 0, 10, 10),
+		"falling":           levels(1, 0, 100, 50),
+		"no name":           {{Level: 0, Name: " "}},
+	} {
+		p := &Program{Name: "x", Levels: l}
+		p.SetId(ProgramID("x"))
+		if err := p.Validate(); !refuse.Is(err) {
+			t.Errorf("%s: err = %v, want a refusal", name, err)
+		}
+	}
+}
+
+func TestALevelWithNoBandIsItsOwnBand(t *testing.T) {
+	p := &Program{Levels: []Level{{Level: 1, Name: "Hacker"}, {Level: 2, Name: "Builder 2", Band: "Builder", MinLifetimePoints: 100}}}
+	at, next := p.LevelOf(0)
+	if at.Band != "Hacker" || next == nil || next.Band != "Builder" {
+		t.Errorf("0 points: %+v then %+v", at, next)
+	}
+	if at, next = p.LevelOf(100); at.Band != "Builder" || at.Name != "Builder 2" || next != nil {
+		t.Errorf("100 points: %+v then %+v", at, next)
+	}
+	// the program's own table is left as it was written.
+	if p.Levels[0].Band != "" {
+		t.Errorf("LevelOf wrote the band into the program: %+v", p.Levels)
+	}
+	if at, next = (&Program{}).LevelOf(5); at != (Level{}) || next != nil {
+		t.Errorf("a program with no levels: %+v then %+v", at, next)
+	}
+}
+
+func TestTheFoundingCutoffIsADateOrATimestampOrEmpty(t *testing.T) {
+	for cutoff, want := range map[string]time.Time{
+		"":                          {},
+		"2026-01-01":                time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+		"2026-01-01T00:00:00Z":      time.Date(2026, 1, 1, 0, 0, 0, 0, time.UTC),
+		"2026-01-01T09:30:00-08:00": time.Date(2026, 1, 1, 17, 30, 0, 0, time.UTC),
+	} {
+		p := &Program{Name: "x", FoundingCutoff: cutoff}
+		p.SetId(ProgramID("x"))
+		if err := p.Validate(); err != nil {
+			t.Errorf("%q: %v", cutoff, err)
+		}
+		if got, err := p.Cutoff(); err != nil || !got.Equal(want) {
+			t.Errorf("%q = %v %v, want %v", cutoff, got, err, want)
+		}
+	}
+	for _, cutoff := range []string{"soon", "2026-13-01", "2026-02-30", "01/02/2026", "2026-01-01 00:00:00", " 2026-01-01", "2026", "2026-01-01T00:00:00"} {
+		p := &Program{Name: "x", FoundingCutoff: cutoff}
+		p.SetId(ProgramID("x"))
+		if err := p.Validate(); !refuse.Is(err) {
+			t.Errorf("%q: err = %v, want a refusal", cutoff, err)
+		}
 	}
 }

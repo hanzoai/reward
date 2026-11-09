@@ -50,8 +50,9 @@ type Config struct {
 // Mount registers the reward capability on app, per the host-mount contract
 // commerce follows: it registers handlers directly on the host's zip.App, so there
 // is one router and one middleware chain, and it does not name its host. It builds
-// the store's indexes, creates the initial program if the store has none (and only
-// then: after that admin owns it), and returns the engine so the host can call
+// the store's indexes, creates the initial program if the store has none (after that
+// admin owns it; a program an earlier seed made is only topped up, see engine.Seed),
+// and returns the engine so the host can call
 // Evaluate, Approve and the rest in process.
 func Mount(app *zip.App, cfg Config) (*engine.Engine, error) {
 	if app == nil {
@@ -71,11 +72,12 @@ func Mount(app *zip.App, cfg Config) (*engine.Engine, error) {
 		DB: cfg.DB, Credits: cfg.Credits, Mail: cfg.Mail,
 		Log: func(format string, args ...any) { log.Error(fmt.Sprintf(format, args...)) },
 	}
-	created, err := e.Seed(context.Background())
+	seeded, err := e.Seed(context.Background())
 	if err != nil {
 		return nil, fmt.Errorf("reward.Mount: seed: %w", err)
 	}
 	http.Route(app, e)
-	log.Info("reward mounted", "prefix", http.Prefix, "admin", http.AdminPrefix, "seeded", created)
+	log.Info("reward mounted", "prefix", http.Prefix, "admin", http.AdminPrefix,
+		"seeded", seeded.Created, "rulesAdded", seeded.Rules, "badgesAdded", seeded.Badges, "levelsReplaced", seeded.Levels, "uplineSet", seeded.Upline)
 	return e, nil
 }

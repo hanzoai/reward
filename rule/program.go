@@ -1,6 +1,7 @@
 package rule
 
 import (
+	"cmp"
 	"slices"
 	"strings"
 	"time"
@@ -28,9 +29,11 @@ const UplineDepth = 3
 
 // Level is a standing, reached at MinLifetimePoints.
 type Level struct {
-	// Level is the standing's number, from 1.
-	Level             int    `json:"level"`
-	Name              string `json:"name"`
+	// Level is the standing's number: from 0 or from 1, then one more each.
+	Level int    `json:"level"`
+	Name  string `json:"name"`
+	// Band is the named run of levels this one belongs to. Empty is Name.
+	Band              string `json:"band"`
 	MinLifetimePoints int64  `json:"minLifetimePoints"`
 }
 
@@ -80,17 +83,25 @@ type Program struct {
 	// Version starts at 1 and is raised each time the program or one of its rules
 	// changes.
 	Version int `json:"version"`
+	// SeedVersion is the version of the embedded seed this program was last brought
+	// up to: 0 for one created before seeds had versions. Only the engine sets it;
+	// admin input never carries it.
+	SeedVersion int `json:"seedVersion"`
 
 	Budget Budget `json:"budget"`
 	// Upline is the percentage of a claim's points paid, as points that count
 	// toward lifetime and never toward redeemable, to the sponsor at each level
 	// above the member: [0] their sponsor, [1] that sponsor's sponsor, [2] one more.
 	// At most UplineDepth entries, each 0 to 100; empty pays no upline.
-	Upline    []int      `json:"upline"`
-	Levels    []Level    `json:"levels"`
-	Badges    []Badge    `json:"badges"`
-	Templates []Template `json:"templates"`
-	Rules     []Rule     `json:"rules"`
+	Upline []int `json:"upline"`
+	// FoundingCutoff is the date a Founding Developer signed up before: an RFC 3339
+	// timestamp, or a date taken as that day's start in UTC. Empty is no cutoff. The
+	// host reads it; the engine decides nothing by it.
+	FoundingCutoff string     `json:"foundingCutoff"`
+	Levels         []Level    `json:"levels"`
+	Badges         []Badge    `json:"badges"`
+	Templates      []Template `json:"templates"`
+	Rules          []Rule     `json:"rules"`
 }
 
 // ProgramID is the store id of the program slug. Every kind keeps ids in a keyspace
@@ -99,24 +110,28 @@ func ProgramID(slug string) string { return "prg:" + slug }
 
 // View is a program as callers see it: its slug as the id, not the store's.
 type View struct {
-	ID        string     `json:"id"`
-	Name      string     `json:"name"`
-	Active    bool       `json:"active"`
-	Version   int        `json:"version"`
-	Budget    Budget     `json:"budget"`
-	Upline    []int      `json:"upline"`
-	Levels    []Level    `json:"levels"`
-	Badges    []Badge    `json:"badges"`
-	Templates []Template `json:"templates"`
-	Rules     []Rule     `json:"rules"`
-	CreatedAt time.Time  `json:"createdAt,omitzero"`
-	UpdatedAt time.Time  `json:"updatedAt,omitzero"`
+	ID      string `json:"id"`
+	Name    string `json:"name"`
+	Active  bool   `json:"active"`
+	Version int    `json:"version"`
+	// SeedVersion is as on Program.
+	SeedVersion int    `json:"seedVersion"`
+	Budget      Budget `json:"budget"`
+	Upline      []int  `json:"upline"`
+	// FoundingCutoff is as on Program.
+	FoundingCutoff string     `json:"foundingCutoff"`
+	Levels         []Level    `json:"levels"`
+	Badges         []Badge    `json:"badges"`
+	Templates      []Template `json:"templates"`
+	Rules          []Rule     `json:"rules"`
+	CreatedAt      time.Time  `json:"createdAt,omitzero"`
+	UpdatedAt      time.Time  `json:"updatedAt,omitzero"`
 }
 
 // View is p as callers see it.
 func (p *Program) View() View {
-	return View{ID: p.Slug(), Name: p.Name, Active: p.Active, Version: p.Version, Budget: p.Budget, Upline: nonNil(p.Upline),
-		Levels: nonNil(p.Levels), Badges: nonNil(p.Badges), Templates: nonNil(p.Templates), Rules: nonNil(p.Rules),
+	return View{ID: p.Slug(), Name: p.Name, Active: p.Active, Version: p.Version, SeedVersion: p.SeedVersion, Budget: p.Budget, Upline: nonNil(p.Upline),
+		FoundingCutoff: p.FoundingCutoff, Levels: nonNil(p.Levels), Badges: nonNil(p.Badges), Templates: nonNil(p.Templates), Rules: nonNil(p.Rules),
 		CreatedAt: p.CreatedAt, UpdatedAt: p.UpdatedAt}
 }
 
@@ -160,18 +175,37 @@ func (p *Program) Template(id string) *Template {
 	return nil
 }
 
-// LevelOf is the highest level that lifetime points reach, and the next one.
+// LevelOf is the highest level that lifetime points reach, and the next one. A level
+// with no Band comes back with its Name as the Band.
 func (p *Program) LevelOf(lifetime int64) (Level, *Level) {
 	var at Level
+	var next *Level
 	for i, l := range p.Levels {
-		if lifetime >= l.MinLifetimePoints {
-			at = l
-			continue
+		if lifetime < l.MinLifetimePoints {
+			next = &p.Levels[i]
+			break
 		}
-		next := p.Levels[i]
-		return at, &next
+		at = l
 	}
-	return at, nil
+	at.Band = cmp.Or(at.Band, at.Name)
+	if next != nil {
+		n := *next
+		n.Band = cmp.Or(n.Band, n.Name)
+		next = &n
+	}
+	return at, next
+}
+
+// Cutoff is FoundingCutoff as a time: the zero time for none, an error for text that
+// is neither an RFC 3339 timestamp nor a date.
+func (p *Program) Cutoff() (time.Time, error) {
+	if p.FoundingCutoff == "" {
+		return time.Time{}, nil
+	}
+	if t, err := time.Parse(time.RFC3339, p.FoundingCutoff); err == nil {
+		return t, nil
+	}
+	return time.Parse(time.DateOnly, p.FoundingCutoff)
 }
 
 // Validate reports why p is not a program: its header and every rule in it.
@@ -193,10 +227,13 @@ func (p *Program) Validate() error {
 			return refuse.New("upline level %d is %d; a percentage is from 0 to 100", i+1, pct)
 		}
 	}
+	if _, err := p.Cutoff(); err != nil {
+		return refuse.New("foundingCutoff %q must be an RFC 3339 timestamp or a date such as 2026-01-01", p.FoundingCutoff)
+	}
 	for i, l := range p.Levels {
 		switch {
-		case l.Level != i+1:
-			return refuse.New("levels must be numbered 1, 2, 3 in order; %q is %d", l.Name, l.Level)
+		case i == 0 && l.Level != 0 && l.Level != 1, i > 0 && l.Level != p.Levels[0].Level+i:
+			return refuse.New("levels must be numbered in order, from 0 or 1; %q is %d", l.Name, l.Level)
 		case strings.TrimSpace(l.Name) == "":
 			return refuse.New("level %d needs a name", l.Level)
 		case i == 0 && l.MinLifetimePoints != 0:
