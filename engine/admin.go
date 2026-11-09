@@ -263,7 +263,15 @@ func (e *Engine) Claims(ctx context.Context, f Filter) ([]*claim.Claim, error) {
 	if n <= 0 {
 		n = 50
 	}
-	return q.Order("-createdAt").Offset(max(f.Offset, 0)).Limit(min(n, 200)).GetAll(ctx)
+	rows, err := q.Order("-createdAt").Offset(max(f.Offset, 0)).Limit(min(n, 200)).GetAll(ctx)
+	if err != nil {
+		return nil, err
+	}
+	// None is an empty list, never null: clients map over it.
+	if rows == nil {
+		rows = []*claim.Claim{}
+	}
+	return rows, nil
 }
 
 // Standing computes the subject's account in the program slug.
