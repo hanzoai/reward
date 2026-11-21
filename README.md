@@ -1,5 +1,7 @@
 # reward
 
+[![Open in Hanzo](https://hanzo.app/badges/open-in-hanzo.svg)](https://hanzo.app/dev/open?repo=github.com/hanzoai/reward&ref=main&action=open) [![Edit with Hanzo](https://hanzo.app/badges/edit-with-hanzo.svg)](https://hanzo.app/dev/open?repo=github.com/hanzoai/reward&ref=main&action=edit) [![Deploy with Hanzo](https://hanzo.app/badges/deploy-with-hanzo.svg)](https://hanzo.app/dev/open?repo=github.com/hanzoai/reward&ref=main&action=deploy)
+
 The rewards rules engine. Programs of rules, claims that staff verify, an
 append-only points ledger, levels, badges, budgets and caps. admin.hanzo.ai
 configures it; cloud feeds it events and mounts it as the `reward` capability at
